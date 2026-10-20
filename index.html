@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#171126">
-<title>20/10</title>
+<title>The Notebook</title>
 
 <style>
 :root {
@@ -1341,6 +1341,328 @@ button { font: inherit; }
 }
 
 /* ==========================
+   LÁ BÀI TRƯỢT XUỐNG
+========================== */
+
+.card-reveal.slide-away .reveal-card {
+  animation: cardSlideDown 1.15s cubic-bezier(.65, 0, .8, .25) forwards;
+}
+
+@keyframes cardSlideDown {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(45vh) scale(0.95) rotate(4deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(115vh) scale(0.8) rotate(9deg);
+  }
+}
+
+/* ==========================
+   THUNG LŨNG HOA OẢI HƯƠNG
+========================== */
+
+.lavender-world {
+  position: absolute;
+  inset: 0;
+  z-index: 28;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      #FFFFFF 0%,
+      #F6EDFC 30%,
+      transparent 68%
+    ),
+    linear-gradient(
+      180deg,
+      #EDE3F7 0%,
+      #E5D6F0 45%,
+      #D5C5E4 100%
+    );
+  transition: opacity 1.4s ease, visibility 1.4s;
+}
+
+.lavender-world.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.lavender-valley {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse at 50% 55%,
+      #FFFFFF35 0%,
+      transparent 55%
+    );
+}
+
+.lavender-sunlight {
+  position: absolute;
+  width: 460px;
+  height: 460px;
+  top: -240px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: #FFF8E8;
+  opacity: .48;
+  filter: blur(65px);
+}
+
+.lavender-hill {
+  position: absolute;
+  width: 150%;
+  left: -25%;
+  border-radius: 50% 50% 0 0;
+  transform-origin: center bottom;
+}
+
+.lavender-hill-back {
+  height: 42vh;
+  min-height: 220px;
+  bottom: 7vh;
+  background: linear-gradient(
+    180deg,
+    #C8B0D8 0%,
+    #B39BCB 100%
+  );
+  transform: rotate(-5deg);
+}
+
+.lavender-hill-middle {
+  height: 34vh;
+  min-height: 190px;
+  bottom: -3vh;
+  left: -35%;
+  width: 170%;
+  background: linear-gradient(
+    180deg,
+    #A78BB9 0%,
+    #8E789D 100%
+  );
+  transform: rotate(5deg);
+}
+
+.lavender-hill-front {
+  height: 28vh;
+  min-height: 160px;
+  bottom: -13vh;
+  left: -20%;
+  width: 145%;
+  background: linear-gradient(
+    180deg,
+    #8D7898 0%,
+    #6E647E 100%
+  );
+  transform: rotate(-4deg);
+}
+
+.lavender-mist {
+  position: absolute;
+  width: 130%;
+  height: 100px;
+  left: -15%;
+  bottom: 19%;
+  background: #F8F1FF;
+  opacity: .2;
+  filter: blur(40px);
+  border-radius: 50%;
+  animation: lavenderMistDrift 16s ease-in-out infinite alternate;
+}
+
+@keyframes lavenderMistDrift {
+  from { transform: translateX(-4%); }
+  to { transform: translateX(4%); }
+}
+
+.lavender-flower-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.lavender-plant {
+  position: absolute;
+  bottom: 0;
+  width: var(--size, 90px);
+  height: var(--height, 210px);
+  transform-origin: center bottom;
+  animation: lavenderSway var(--sway, 4s) ease-in-out infinite alternate;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes lavenderSway {
+  0% { transform: rotate(-5deg); }
+  100% { transform: rotate(5deg); }
+}
+
+.lavender-stem {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  height: 72%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: linear-gradient(
+    180deg,
+    #73865F,
+    #536D52
+  );
+  transform-origin: center bottom;
+}
+
+.lavender-leaf {
+  position: absolute;
+  width: 17px;
+  height: 6px;
+  background: #748966;
+  border-radius: 100% 0 100% 0;
+}
+
+.lavender-leaf-left {
+  left: -14px;
+  bottom: 28%;
+  transform: rotate(22deg);
+}
+
+.lavender-leaf-right {
+  right: -14px;
+  bottom: 42%;
+  transform: rotate(75deg) scaleX(-1);
+}
+
+.lavender-blossom {
+  position: absolute;
+  left: 50%;
+  top: 3%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transform: translateX(-50%);
+}
+
+.lavender-petal-row {
+  display: flex;
+  justify-content: center;
+  gap: 1px;
+}
+
+.lavender-petal {
+  width: 8px;
+  height: 12px;
+  border-radius: 70% 70% 45% 45%;
+  background: linear-gradient(
+    180deg,
+    #C8A6EA,
+    #8D69B5
+  );
+  box-shadow: 0 1px 4px #73518D25;
+}
+
+.lavender-petal:nth-child(2n) {
+  background: linear-gradient(
+    180deg,
+    #D8BDF2,
+    #A485C8
+  );
+}
+
+.lavender-petal-row:nth-child(2) .lavender-petal {
+  width: 7px;
+  height: 11px;
+}
+
+.lavender-petal-row:nth-child(3) .lavender-petal {
+  width: 6px;
+  height: 9px;
+}
+
+.lavender-fireflies {
+  position: absolute;
+  inset: 0;
+}
+
+.lavender-firefly {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #FFF7D8;
+  box-shadow:
+    0 0 8px 2px #FFF5D855,
+    0 0 16px #FFF7E455;
+  animation: lavenderFireflyFloat var(--duration, 5s) ease-in-out infinite alternate;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes lavenderFireflyFloat {
+  0% {
+    opacity: .15;
+    transform: translate(0, 0) scale(.7);
+  }
+  50% { opacity: .8; }
+  100% {
+    opacity: .4;
+    transform: translate(12px, -20px) scale(1.2);
+  }
+}
+
+.lavender-wish {
+  position: absolute;
+  z-index: 4;
+  top: 14%;
+  left: 50%;
+  width: min(88%, 440px);
+  transform: translate(-50%, 16px);
+  opacity: 0;
+  color: #51415F;
+  text-align: center;
+  white-space: pre-line;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(18px, 4.6vw, 26px);
+  line-height: 1.75;
+  text-shadow:
+    0 1px 0 #fff8,
+    0 0 24px rgba(255, 255, 255, .7);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.lavender-wish.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (max-width: 480px) {
+  .lavender-hill-back { height: 35vh; }
+  .lavender-hill-middle { height: 28vh; }
+  .lavender-hill-front { height: 23vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lavender-plant,
+  .lavender-firefly,
+  .lavender-mist {
+    animation: none !important;
+  }
+}
+
+/* ==========================
    NHẤN GIỮ: TRIỆU HỒI BÀI
 ========================== */
 
@@ -1577,17 +1899,19 @@ button { font: inherit; }
   <!-- TRANG 1: LỜI NÓI ĐẦU -->
   <section class="paper-page active" id="page1">
     <div class="paper-content">
-     
+      <div class="eyebrow">Lời nói đầu</div>
 
-      <h2 class="paper-title">Gửi Uyên Thảo / Lía,</h2>
+      <h2 class="paper-title">Gửi Uyên Thảo </h2>
 
       <div class="paper-text">
         <p>
-          chúc mừng 20/10 lúc hơi trễ
+          chúc mừng 20/10
+  
         </p>
 
         <p>
-          Mong rằng khi mở ra em sẽ tìm đc một chút niềm vui và bất ngờ.
+          Mong rằng khi mở ra
+          em sẽ tìm thấy một chút bất ngờ và niềm vui.
         </p>
 
         
@@ -1649,7 +1973,7 @@ button { font: inherit; }
     <div class="reveal-card-inner">
       <div class="reveal-card-symbol">✦</div>
       <div class="reveal-card-wish" id="revealWish">
-  
+      
       </div>
       <div class="reveal-card-symbol bottom">✦</div>
     </div>
@@ -1664,6 +1988,22 @@ button { font: inherit; }
 </div>
   </section>
 
+  <!-- THUNG LŨNG HOA OẢI HƯƠNG -->
+  <div class="lavender-world" id="lavenderWorld" aria-hidden="true">
+    <div class="lavender-valley" aria-hidden="true">
+      <div class="lavender-sunlight"></div>
+      <div class="lavender-hill lavender-hill-back"></div>
+      <div class="lavender-hill lavender-hill-middle"></div>
+      <div class="lavender-hill lavender-hill-front"></div>
+      <div class="lavender-mist"></div>
+      <div class="lavender-flower-field" id="lavenderFlowerField"></div>
+      <div class="lavender-fireflies" id="lavenderFireflies"></div>
+    </div>
+    <div class="lavender-wish" id="lavenderWish">
+      lời cuối cùng, xin lỗi em vì đã chúc em 20/10 trễ như vậy. mong em không quá buồn :(
+    </div>
+  </div>
+
   <!-- HIỆU ỨNG XÉ GIẤY -->
   <div class="paper-tear" id="paperTear" aria-hidden="true">
     <div class="paper-half paper-half-left"></div>
@@ -1672,11 +2012,11 @@ button { font: inherit; }
 
     <!-- Cảnh kết dùng lại chính hai mảnh giấy của hiệu ứng xé ban đầu -->
     <div class="ending-content">
-      <p class="ending-words" id="endingWords">
-  chúc em luôn xinh đẹp, học giỏi,
-  Valorant thì rank bay cao,
-  an khang thịnh vượng, phát lộc phát tài.
-</p>
+      <p class="ending-words" id="endingWords">Uyên Thảo 
+chúc em luôn xinh đẹp, học giỏi,
+Valorant thì rank bay cao,
+an khang thịnh vượng, phát lộc phát tài.
+Anh luôn ở đây vì em.</p>
     </div>
 
     <div class="ending-book" id="endingBook">
@@ -1742,19 +2082,15 @@ button { font: inherit; }
       </div>
 
       <div class="cover-title-wrap">
-        <div class="cover-small-title">
         
-        </div>
         <h1 class="cover-title">Notebook</h1>
-        <div class="cover-subtitle">
-         
-        </div>
+        
       </div>
 
-     
+      
     </div>
 
-  
+    
 
     <div class="cover-button">
       <button class="action" id="openNotebook" type="button">
@@ -2048,6 +2384,110 @@ const magicReveal = document.getElementById("cardReveal");
 const magicRevealCard = document.getElementById("revealCard");
 const magicWish = document.getElementById("revealWish");
 const magicSummon = document.getElementById("summonEffect");
+const lavenderWorld = document.getElementById("lavenderWorld");
+const lavenderFlowerField = document.getElementById("lavenderFlowerField");
+const lavenderFireflies = document.getElementById("lavenderFireflies");
+const lavenderWish = document.getElementById("lavenderWish");
+let lavenderReady = false;
+
+function createLavenderPlant(x, size, height, delay, sway) {
+  const flower = document.createElement("div");
+  flower.className = "lavender-plant";
+  flower.style.left = `${x}%`;
+  flower.style.setProperty("--size", `${size}px`);
+  flower.style.setProperty("--height", `${height}px`);
+  flower.style.setProperty("--delay", `${delay}s`);
+  flower.style.setProperty("--sway", `${sway}s`);
+
+  const stem = document.createElement("div");
+  stem.className = "lavender-stem";
+
+  const leafLeft = document.createElement("div");
+  leafLeft.className = "lavender-leaf lavender-leaf-left";
+  const leafRight = document.createElement("div");
+  leafRight.className = "lavender-leaf lavender-leaf-right";
+
+  const blossom = document.createElement("div");
+  blossom.className = "lavender-blossom";
+
+  [3, 3, 2, 2, 1].forEach((count) => {
+    const row = document.createElement("div");
+    row.className = "lavender-petal-row";
+    for (let i = 0; i < count; i++) {
+      const petal = document.createElement("span");
+      petal.className = "lavender-petal";
+      row.appendChild(petal);
+    }
+    blossom.appendChild(row);
+  });
+
+  stem.appendChild(leafLeft);
+  stem.appendChild(leafRight);
+  flower.appendChild(stem);
+  flower.appendChild(blossom);
+  lavenderFlowerField.appendChild(flower);
+}
+
+function buildLavenderField() {
+  if (!lavenderFlowerField) return;
+  lavenderFlowerField.replaceChildren();
+
+  const width = window.innerWidth || 400;
+
+  const farCount = Math.ceil(width / 48);
+  for (let i = 0; i < farCount; i++) {
+    createLavenderPlant(
+      (i / farCount) * 100,
+      28 + Math.random() * 10,
+      70 + Math.random() * 35,
+      Math.random() * -5,
+      3 + Math.random() * 3
+    );
+  }
+
+  const middleCount = Math.ceil(width / 38);
+  for (let i = 0; i < middleCount; i++) {
+    createLavenderPlant(
+      (i / middleCount) * 100,
+      36 + Math.random() * 14,
+      110 + Math.random() * 55,
+      Math.random() * -5,
+      3 + Math.random() * 2.5
+    );
+  }
+
+  const nearCount = Math.ceil(width / 65);
+  for (let i = 0; i < nearCount; i++) {
+    createLavenderPlant(
+      (i / nearCount) * 100,
+      48 + Math.random() * 18,
+      155 + Math.random() * 65,
+      Math.random() * -5,
+      3.5 + Math.random() * 2
+    );
+  }
+}
+
+function buildLavenderFireflies() {
+  if (!lavenderFireflies || lavenderFireflies.children.length > 0) return;
+
+  for (let i = 0; i < 32; i++) {
+    const light = document.createElement("span");
+    light.className = "lavender-firefly";
+    light.style.left = `${Math.random() * 100}%`;
+    light.style.top = `${25 + Math.random() * 65}%`;
+    light.style.setProperty("--duration", `${4 + Math.random() * 6}s`);
+    light.style.setProperty("--delay", `${Math.random() * -8}s`);
+    lavenderFireflies.appendChild(light);
+  }
+}
+
+function prepareLavenderWorld() {
+  if (lavenderReady) return;
+  buildLavenderField();
+  buildLavenderFireflies();
+  lavenderReady = true;
+}
 
 let magicBusy = false;
 let holdTimer = null;
@@ -2060,13 +2500,12 @@ const HOLD_DURATION = 650;
 
 // Sửa lời chúc tại đây.
 // Tất cả các lá bài đều dùng chung lời chúc này.
-const sharedWish = `Chúc Uyên Thảo / Lía của anh
+const sharedWish = `Chúc Uyên Thảo của anh
 ngày càng xinh đẹp, học hành giỏi giang,
 và bắn Valorant ngày càng đỉnh hơn.
 
 An khang thịnh vượng,
-phát lộc phát tài.
-`;
+phát lộc phát tài,
 
 // Gõ từng chữ lên lá bài
 function typeMagicWish(text) {
@@ -2176,6 +2615,27 @@ async function revealMagicCard(selectedCard, x, y, isSummon = false) {
 
   // Giữ lá bài trên màn hình để người nhận đọc
   await new Promise(resolve => setTimeout(resolve, 2800));
+
+  // Chuẩn bị & hiện thung lũng hoa oải hương
+  prepareLavenderWorld();
+  if (lavenderWorld) {
+    lavenderWorld.classList.add("show");
+    lavenderWorld.setAttribute("aria-hidden", "false");
+  }
+
+  await new Promise(resolve => setTimeout(resolve, 900));
+
+  // Lá bài trượt xuống, lộ cảnh hoa oải hương
+  magicReveal.classList.add("slide-away");
+
+  await new Promise(resolve => setTimeout(resolve, 1200));
+
+  if (lavenderWish) {
+    lavenderWish.classList.add("show");
+  }
+
+  // Giữ cảnh hoa đủ lâu để đọc lời chúc
+  await new Promise(resolve => setTimeout(resolve, 4000));
 
   // Chuyển sang cảnh kết
   await playFinalEnding();
