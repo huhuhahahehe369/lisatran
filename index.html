@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -533,6 +532,8 @@ button { font: inherit; }
   height: calc(var(--w) * 1.48);
   opacity: var(--opacity, .72);
   transform-style: preserve-3d;
+  pointer-events: auto;
+  cursor: pointer;
   animation:
     cardDrift var(--duration, 12s) ease-in-out infinite alternate,
     cardTurn var(--turn-duration, 17s) ease-in-out infinite;
@@ -2502,10 +2503,7 @@ const HOLD_DURATION = 650;
 // Tất cả các lá bài đều dùng chung lời chúc này.
 const sharedWish = `Chúc Uyên Thảo của anh
 ngày càng xinh đẹp, học hành giỏi giang,
-và bắn Valorant ngày càng đỉnh hơn.
-
-An khang thịnh vượng,
-phát lộc phát tài,
+và bắn Valorant ngày càng đỉnh hơn.`;
 
 // Gõ từng chữ lên lá bài
 function typeMagicWish(text) {
