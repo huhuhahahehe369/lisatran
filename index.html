@@ -1,1 +1,2359 @@
 
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#130d20">
+<title>The Little Notebook · Universe</title>
+
+<style>
+:root {
+  --paper: #f6ead7;
+  --ink: #443329;
+  --purple: #261536;
+  --lavender: #dfc0ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  overflow: hidden;
+  background: #130d20;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+}
+
+/* =========================
+   CÁC TRANG SỔ TAY
+========================= */
+
+.page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  background:
+    radial-gradient(ellipse at 15% 20%, #fff8e8 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 85%, #e9d4b8 0%, transparent 45%),
+    #f1e2ca;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .7s ease, visibility .7s ease;
+  z-index: 1;
+}
+
+.page.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.paper {
+  position: relative;
+  width: min(100%, 560px);
+  min-height: min(76vh, 610px);
+  padding: clamp(25px, 7vw, 48px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 1px solid rgba(113, 77, 44, .22);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 31px,
+      rgba(123, 93, 65, .06) 32px
+    ),
+    rgba(255, 249, 236, .94);
+  box-shadow: 0 22px 65px rgba(59, 36, 20, .2);
+}
+
+.paper::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(125, 91, 61, .18);
+  pointer-events: none;
+}
+
+.eyebrow {
+  color: #9b7960;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .22em;
+  font-size: 10px;
+}
+
+.paper h1 {
+  font-size: clamp(30px, 7vw, 46px);
+  font-weight: normal;
+  line-height: 1.25;
+  margin: 22px 0;
+}
+
+.paper p {
+  max-width: 390px;
+  font-size: clamp(16px, 4vw, 19px);
+  line-height: 1.9;
+}
+
+.paper .small-note {
+  color: #927963;
+  font-size: 13px;
+  margin-top: 20px;
+}
+
+.action-button {
+  margin-top: 28px;
+  padding: 12px 22px;
+  border: 1px solid #8c6b50;
+  color: #553c2d;
+  background: rgba(255, 250, 238, .8);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background .25s, transform .25s;
+}
+
+.action-button:hover {
+  background: #f0dfc5;
+  transform: translateY(-2px);
+}
+
+/* Bìa sổ */
+
+.cover {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  text-align: center;
+  color: #f5e5cc;
+  background:
+    radial-gradient(ellipse at 50% 35%, #75513e, transparent 65%),
+    linear-gradient(145deg, #4c3029, #211a19);
+  border: 5px double rgba(236, 209, 165, .5);
+  transform-origin: left center;
+  transition: transform 1.2s cubic-bezier(.65, 0, .35, 1);
+  backface-visibility: hidden;
+}
+
+.cover h1 {
+  font-size: clamp(30px, 8vw, 49px);
+  font-weight: normal;
+  line-height: 1.25;
+}
+
+.cover p {
+  color: #d9c1a5;
+  letter-spacing: .08em;
+}
+
+.cover button {
+  margin-top: 24px;
+  padding: 12px 24px;
+  color: #f6e8d0;
+  background: transparent;
+  border: 1px solid rgba(246, 232, 208, .6);
+  cursor: pointer;
+}
+
+.cover.open {
+  transform: perspective(1400px) rotateY(-112deg);
+  pointer-events: none;
+}
+
+.page.leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.page.ripping {
+  animation: paperRip .75s ease forwards;
+}
+
+@keyframes paperRip {
+  0% { clip-path: inset(0); transform: scale(1); }
+  35% { clip-path: polygon(0 0,100% 0,100% 42%,52% 49%,100% 56%,100% 100%,0 100%); }
+  100% { clip-path: polygon(0 0,100% 0,100% 0,50% 0,0 0); transform: scale(1.05); opacity: 0; }
+}
+
+/* =========================
+   VŨ TRỤ
+========================= */
+
+.universe {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% 48%, #302043 0%, #1a102a 43%, #0c0915 100%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 1s ease, visibility 1s ease;
+  z-index: 5;
+  touch-action: pan-y;
+}
+
+.universe.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.cosmic-background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cosmic-glow {
+  position: absolute;
+  width: 75vw;
+  height: 75vw;
+  max-width: 700px;
+  max-height: 700px;
+  border-radius: 50%;
+  left: -20%;
+  top: 10%;
+  background: rgba(105, 51, 157, .13);
+  filter: blur(75px);
+}
+
+.cosmic-glow.secondary {
+  left: auto;
+  right: -30%;
+  top: 45%;
+  background: rgba(83, 64, 171, .14);
+}
+
+.star-field {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 7px rgba(230, 207, 255, .9);
+  animation: twinkle var(--duration, 3s) ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  from { opacity: .2; transform: scale(.65); }
+  to { opacity: 1; transform: scale(1.3); }
+}
+
+.shooting-star {
+  position: absolute;
+  width: 115px;
+  height: 1px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, #fff, #d9b3ff);
+  transform: rotate(-35deg);
+  filter: drop-shadow(0 0 5px #d3a5ff);
+  animation: shootStar 7s linear infinite;
+}
+
+.shooting-star.one {
+  top: 18%;
+  left: -150px;
+}
+
+.shooting-star.two {
+  top: 42%;
+  left: -150px;
+  animation-delay: 3.5s;
+  animation-duration: 9s;
+}
+
+@keyframes shootStar {
+  0%, 65% { opacity: 0; transform: translate(0, 0) rotate(-35deg); }
+  68% { opacity: 1; }
+  84% { opacity: .8; transform: translate(125vw, 48vh) rotate(-35deg); }
+  85%, 100% { opacity: 0; }
+}
+
+.card-sparkles {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  color: #e5c7ff;
+  text-shadow: 0 0 12px #c18cff;
+  animation: sparkleFloat var(--duration, 4s) ease-in-out infinite alternate;
+}
+
+@keyframes sparkleFloat {
+  from { transform: translateY(8px) rotate(0deg); opacity: .15; }
+  to { transform: translateY(-14px) rotate(90deg); opacity: .9; }
+}
+
+/* Các lá bài */
+
+.flying-cards {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity .55s ease;
+}
+
+.flying-card {
+  position: absolute;
+  width: clamp(65px, 17vw, 105px);
+  aspect-ratio: 2 / 3;
+  border-radius: 9px;
+  padding: 5px;
+  border: 1px solid rgba(255,255,255,.6);
+  background: linear-gradient(145deg, #f8efff, #c6a7e9 35%, #3c2358);
+  box-shadow: 0 7px 25px rgba(0,0,0,.35), 0 0 18px rgba(180,125,255,.2);
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: filter .25s;
+  animation: cardFloat var(--float-time, 6s) ease-in-out infinite alternate;
+}
+
+.flying-card:hover {
+  filter: brightness(1.25);
+}
+
+.card-face {
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  border: 1px solid rgba(63, 36, 83, .35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.55), transparent 55%),
+    linear-gradient(150deg, #e9d7ff, #9b75c5);
+  color: #422751;
+}
+
+.card-face::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(65, 37, 88, .35);
+  border-radius: 3px;
+}
+
+.card-face .card-mark {
+  font-size: clamp(18px, 5vw, 28px);
+}
+
+.card-face .card-name {
+  font-family: Arial, sans-serif;
+  font-size: 9px;
+  letter-spacing: .08em;
+  margin-top: 5px;
+}
+
+.card-face .corner {
+  position: absolute;
+  font-size: 12px;
+  top: 5px;
+  left: 6px;
+}
+
+.card-face .corner.bottom {
+  top: auto;
+  left: auto;
+  bottom: 5px;
+  right: 6px;
+  transform: rotate(180deg);
+}
+
+@keyframes cardFloat {
+  from { transform: translateY(-7px) rotate(var(--rotation, -8deg)); }
+  to { transform: translateY(12px) rotate(calc(var(--rotation, -8deg) + 7deg)); }
+}
+
+#backToPage2 {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 70;
+  padding: 10px 15px;
+  border: 1px solid rgba(220, 190, 255, .35);
+  border-radius: 999px;
+  background: rgba(25, 12, 45, .55);
+  color: #e5d4ff;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: .25s;
+}
+
+#backToPage2:hover {
+  background: rgba(150, 100, 220, .2);
+  transform: translateX(-3px);
+}
+
+/* =========================
+   TRIỆU HỒI CÁC LÁ BÀI
+========================= */
+
+.summon-effect {
+  position: fixed;
+  z-index: 20;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+}
+
+.summon-effect.active { opacity: 1; }
+
+.summon-ring {
+  position: absolute;
+  inset: -30px;
+  border: 1px solid rgba(222, 182, 255, .9);
+  border-radius: 50%;
+  box-shadow: 0 0 25px rgba(173, 106, 255, .5);
+  animation: summonSpin .9s linear infinite;
+}
+
+.summon-ring.second {
+  inset: -55px;
+  border-style: dashed;
+  animation-direction: reverse;
+  animation-duration: 1.3s;
+}
+
+.summon-core {
+  position: absolute;
+  inset: -14px;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 25px;
+  text-shadow: 0 0 18px #d7a4ff;
+  animation: corePulse .6s ease-in-out infinite alternate;
+}
+
+@keyframes summonSpin {
+  to { transform: rotate(360deg) scale(1.15); }
+}
+
+@keyframes corePulse {
+  to { transform: scale(1.5); opacity: .55; }
+}
+
+/* =========================
+   LÁ BÀI VÀ LỜI CHÚC
+========================= */
+
+.card-reveal {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1200px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.card-reveal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.reveal-card {
+  width: min(76vw, 340px);
+  height: min(112vw, 490px);
+  max-height: 72vh;
+  padding: 9px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #f5e7ff, #8f60bb 35%, #251437 70%, #d6b7ff);
+  box-shadow: 0 0 30px rgba(190,135,255,.65), 0 0 100px rgba(134,73,214,.35);
+  transform: translateZ(-700px) scale(.15) rotateY(25deg);
+  opacity: 0;
+}
+
+.card-reveal.show .reveal-card {
+  animation: cardShootIn .85s cubic-bezier(.16,.8,.25,1) forwards;
+}
+
+.reveal-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.65);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 27px;
+  text-align: center;
+  color: #fff4ff;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(161,107,210,.65), transparent 60%),
+    linear-gradient(160deg, #28163d, #100b20 70%, #352046);
+}
+
+.reveal-card-inner::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(235,208,255,.3);
+  border-radius: 9px;
+}
+
+.reveal-card-symbol {
+  font-size: 35px;
+  color: #f4d9ff;
+  text-shadow: 0 0 20px #d9a4ff;
+}
+
+.reveal-card-symbol.bottom { transform: rotate(180deg); }
+
+.reveal-card-wish {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  font-size: clamp(16px, 4.3vw, 23px);
+  line-height: 1.8;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  text-shadow: 0 0 15px rgba(230,191,255,.25);
+}
+
+@keyframes cardShootIn {
+  0% { opacity: 0; transform: translateZ(-700px) scale(.15) rotateY(25deg); }
+  65% { opacity: 1; transform: translateZ(60px) scale(1.06) rotateY(-5deg); }
+  100% { opacity: 1; transform: translateZ(0) scale(1) rotateY(0); }
+}
+
+.card-reveal.slide-away .reveal-card {
+  animation: cardSlideDown 1.15s cubic-bezier(.65,0,.8,.25) forwards;
+}
+
+@keyframes cardSlideDown {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  60% { opacity: 1; transform: translateY(45vh) scale(.95) rotate(4deg); }
+  100% { opacity: 0; transform: translateY(115vh) scale(.8) rotate(9deg); }
+}
+
+/* =========================
+   THẾ GIỚI BĂNG TUYẾT
+========================= */
+
+.ice-world {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(213,242,255,.65), transparent 38%),
+    linear-gradient(to bottom, #101b3a 0%, #4b7598 48%, #c5e4f0 82%, #effaff 100%);
+  transition: opacity 1.4s ease, visibility 1.4s;
+}
+
+.ice-world.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.ice-moon {
+  position: absolute;
+  top: 12%;
+  right: 16%;
+  width: clamp(50px, 10vw, 100px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #effaff;
+  box-shadow: 0 0 25px rgba(222,246,255,.8), 0 0 90px rgba(173,223,255,.55);
+}
+
+.ice-mountains {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: 18%;
+  height: 48%;
+  background: linear-gradient(145deg, #e5f7ff, #8bbbd3 55%, #446e91);
+  clip-path: polygon(0 100%,0 65%,12% 30%,20% 57%,36% 5%,48% 53%,60% 17%,74% 60%,87% 28%,100% 62%,100% 100%);
+  filter: drop-shadow(0 -8px 20px rgba(218,244,255,.3));
+}
+
+.ice-ground {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: -8%;
+  height: 37%;
+  border-radius: 50% 50% 0 0;
+  background: linear-gradient(to bottom, #e9f9ff, #b9dfef);
+  box-shadow: 0 -15px 60px rgba(221,245,255,.35);
+}
+
+.ice-snow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.ice-snow span {
+  position: absolute;
+  top: -15px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 7px rgba(255,255,255,.9);
+  animation: snowFall linear infinite;
+}
+
+@keyframes snowFall {
+  from { transform: translate3d(0,-5vh,0); }
+  to { transform: translate3d(35px,110vh,0); }
+}
+
+@media (max-width: 600px) {
+  #backToPage2 {
+    top: 14px;
+    left: 14px;
+    font-size: 12px;
+    padding: 9px 13px;
+  }
+
+  .paper { min-height: 72vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star, .sparkle, .flying-card, .summon-ring,
+  .summon-core, .ice-snow span {
+    animation-duration: 8s;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     TRANG 1: BÌA SỔ
+========================= -->
+
+<section class="page active" id="page1">
+  <div class="paper">
+    <div class="eyebrow">A little notebook</div>
+    <h1>Một cuốn sổ nhỏ</h1>
+    <p>Đôi khi, những điều nhỏ bé nhất lại cất giữ những điều đáng nhớ nhất.</p>
+    <div class="small-note">Lật mở để khám phá · 20/10</div>
+  </div>
+
+  <div class="cover" id="cover">
+    <div class="eyebrow">Một món quà nhỏ</div>
+    <h1>The Little<br>Notebook</h1>
+    <p>20 · 10 · Một điều muốn gửi</p>
+    <button id="openCover">Mở cuốn sổ ✦</button>
+  </div>
+</section>
+
+<!-- =========================
+     TRANG 2: TÂM TÌNH
+========================= -->
+
+<section class="page" id="page2">
+  <div class="paper">
+    <div class="eyebrow">Trang thứ hai</div>
+    <h1>Một chút tâm tình</h1>
+    <p>
+      Có những điều không cần phải thật lớn lao mới trở nên đặc biệt.
+      Đôi khi, chỉ một lời chúc nhỏ cũng đủ khiến một ngày bình thường
+      trở nên đáng nhớ hơn một chút.
+    </p>
+    <p>
+      Và phía sau trang giấy này, có một nơi đang chờ được khám phá.
+    </p>
+    <button class="action-button" id="exploreUniverse">
+      Khám phá vũ trụ ✦
+    </button>
+  </div>
+</section>
+
+<!-- =========================
+     TRANG 3: VŨ TRỤ LÁ BÀI
+========================= -->
+
+<section class="universe" id="universe">
+
+  <div class="cosmic-background" aria-hidden="true">
+    <div class="cosmic-glow"></div>
+    <div class="cosmic-glow secondary"></div>
+  </div>
+
+  <div class="star-field" id="starField" aria-hidden="true"></div>
+
+  <div class="card-sparkles" id="cardSparkles" aria-hidden="true"></div>
+
+  <div class="flying-cards" id="flying-cards"></div>
+
+  <div class="shooting-star one"></div>
+  <div class="shooting-star two"></div>
+
+  <button id="backToPage2">← Trở về trang 2</button>
+
+  <!-- Hiệu ứng triệu hồi bài -->
+  <div class="summon-effect" id="summonEffect" aria-hidden="true">
+    <div class="summon-ring"></div>
+    <div class="summon-ring second"></div>
+    <div class="summon-core">✦</div>
+  </div>
+
+  <!-- Lá bài phóng lớn -->
+  <div class="card-reveal" id="cardReveal" aria-hidden="true">
+    <div class="reveal-card" id="revealCard">
+      <div class="reveal-card-inner">
+        <div class="reveal-card-symbol">✦</div>
+        <div class="reveal-card-wish" id="revealWish"></div>
+        <div class="reveal-card-symbol bottom">✦</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phong cảnh băng tuyết -->
+  <div class="ice-world" id="iceWorld" aria-hidden="true">
+    <div class="ice-moon"></div>
+    <div class="ice-mountains"></div>
+    <div class="ice-ground"></div>
+    <div class="ice-snow" id="iceSnow"></div>
+  </div>
+
+</section>
+
+<script>
+/* =========================
+   ĐIỀU HƯỚNG SỔ TAY
+========================= */
+
+const page1 = document.getElementById("page1");
+const page2 = document.getElementById("page2");
+const cover = document.getElementById("cover");
+const universe = document.getElementById("universe");
+
+const openCover = document.getElementById("openCover");
+const exploreUniverse = document.getElementById("exploreUniverse");
+const backToPage2 = document.getElementById("backToPage2");
+
+let currentPage = 1;
+let pageBusy = false;
+let universeStarted = false;
+
+function later(callback, delay) {
+  return setTimeout(callback, delay);
+}
+
+openCover.addEventListener("click", () => {
+  if (pageBusy) return;
+  pageBusy = true;
+
+  cover.classList.add("open");
+
+  later(() => {
+    page1.classList.remove("active");
+    page2.classList.add("active");
+    currentPage = 2;
+    pageBusy = false;
+  }, 850);
+});
+
+exploreUniverse.addEventListener("click", () => {
+  if (pageBusy || currentPage !== 2) return;
+  pageBusy = true;
+
+  page2.classList.add("leaving", "ripping");
+
+  later(() => {
+    page2.classList.remove("active", "leaving", "ripping");
+    universe.classList.add("active");
+    currentPage = 3;
+    pageBusy = false;
+
+    if (!universeStarted) {
+      createCosmos();
+      createFlyingCards();
+      universeStarted = true;
+    }
+  }, 650);
+});
+
+backToPage2.addEventListener("click", () => {
+  if (pageBusy || magicBusy) return;
+  pageBusy = true;
+
+  universe.classList.remove("active");
+
+  later(() => {
+    page2.classList.remove("leaving", "ripping");
+    page2.classList.add("active");
+    currentPage = 2;
+    pageBusy = false;
+  }, 650);
+});
+
+/* =========================
+   TẠO SAO VÀ ÁNH SÁNG
+========================= */
+
+const starField = document.getElementById("starField");
+const cardSparkles = document.getElementById("cardSparkles");
+
+function createCosmos() {
+  for (let i = 0; i < 115; i++) {
+    const star = document.createElement("span");
+    star.className = "star";
+
+    const size = Math.random() * 2.2 + .6;
+    star.style.width = size + "px";
+    star.style.height = size + "px";
+    star.style.left = Math.random() * 100 + "%";
+    star.style.top = Math.random() * 100 + "%";
+    star.style.setProperty("--duration", (2 + Math.random() * 4) + "s");
+    star.style.animationDelay = (-Math.random() * 5) + "s";
+
+    starField.appendChild(star);
+  }
+
+  for (let i = 0; i < 28; i++) {
+    const sparkle = document.createElement("span");
+    sparkle.className = "sparkle";
+    sparkle.textContent = Math.random() > .5 ? "✦" : "·";
+    sparkle.style.left = Math.random() * 100 + "%";
+    sparkle.style.top = Math.random() * 100 + "%";
+    sparkle.style.fontSize = (8 + Math.random() * 13) + "px";
+    sparkle.style.setProperty("--duration", (3 + Math.random() * 5) + "s");
+    sparkle.style.animationDelay = (-Math.random() * 5) + "s";
+
+    cardSparkles.appendChild(sparkle);
+  }
+}
+
+/* =========================
+   TẠO CÁC LÁ BÀI BAY
+========================= */
+
+const cardContainer = document.getElementById("flying-cards");
+
+const cardDeck = [
+  { name: "POKER", mark: "♠" },
+  { name: "UNO", mark: "✦" },
+  { name: "WEREWOLF", mark: "☾" },
+  { name: "POKER", mark: "♥" },
+  { name: "UNO", mark: "★" },
+  { name: "WEREWOLF", mark: "✧" },
+  { name: "POKER", mark: "♦" },
+  { name: "UNO", mark: "✦" },
+  { name: "WEREWOLF", mark: "☽" },
+  { name: "POKER", mark: "♣" },
+  { name: "UNO", mark: "✧" },
+  { name: "POKER", mark: "★" }
+];
+
+function createCardFace(cardData) {
+  const face = document.createElement("div");
+  face.className = "card-face";
+
+  const cornerTop = document.createElement("span");
+  cornerTop.className = "corner";
+  cornerTop.textContent = cardData.mark;
+
+  const mark = document.createElement("span");
+  mark.className = "card-mark";
+  mark.textContent = cardData.mark;
+
+  const name = document.createElement("span");
+  name.className = "card-name";
+  name.textContent = cardData.name;
+
+  const cornerBottom = document.createElement("span");
+  cornerBottom.className = "corner bottom";
+  cornerBottom.textContent = cardData.mark;
+
+  face.append(cornerTop, mark, name, cornerBottom);
+  return face;
+}
+
+function createFlyingCards() {
+  cardContainer.innerHTML = "";
+
+  cardDeck.forEach((data, index) => {
+    const card = document.createElement("div");
+    card.className = "flying-card";
+    card.appendChild(createCardFace(data));
+
+    const x = 7 + Math.random() * 79;
+    const y = 12 + Math.random() * 72;
+
+    card.style.left = x + "%";
+    card.style.top = y + "%";
+    card.style.setProperty("--rotation", (-20 + Math.random() * 40) + "deg");
+    card.style.setProperty("--float-time", (4 + Math.random() * 4) + "s");
+    card.style.animationDelay = (-Math.random() * 5) + "s";
+    card.dataset.cardIndex = String(index);
+
+    cardContainer.appendChild(card);
+  });
+}
+
+/* =========================
+   CHỌN BÀI VÀ LỜI CHÚC
+========================= */
+
+const cardReveal = document.getElementById("cardReveal");
+const revealWish = document.getElementById("revealWish");
+const summonEffect = document.getElementById("summonEffect");
+const iceWorld = document.getElementById("iceWorld");
+const iceSnow = document.getElementById("iceSnow");
+
+let magicBusy = false;
+let holdTimer = null;
+let holdTriggered = false;
+let suppressNextClick = false;
+let pointerStartX = 0;
+let pointerStartY = 0;
+
+const HOLD_DURATION = 650;
+
+const sharedWish = `Chúc mọi điều tốt đẹp sẽ tìm đến.
+Mong những ngày vui luôn dài hơn,
+những ngày buồn sẽ ngắn lại,
+và luôn có đủ dũng khí để theo đuổi
+những điều khiến trái tim hạnh phúc.`;
+
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function createIceSnow() {
+  if (iceSnow.children.length) return;
+
+  for (let i = 0; i < 65; i++) {
+    const snow = document.createElement("span");
+
+    snow.style.left = Math.random() * 100 + "%";
+    snow.style.animationDuration = (5 + Math.random() * 8) + "s";
+    snow.style.animationDelay = (-Math.random() * 12) + "s";
+    snow.style.opacity = .3 + Math.random() * .7;
+
+    const size = 2 + Math.random() * 3;
+    snow.style.width = size + "px";
+    snow.style.height = size + "px";
+
+    iceSnow.appendChild(snow);
+  }
+}
+
+async function typeMagicWish(text) {
+  revealWish.textContent = "";
+
+  for (const character of text) {
+    revealWish.textContent += character;
+    await wait(35);
+  }
+}
+
+function getRandomMagicCard(cards) {
+  return cards[Math.floor(Math.random() * cards.length)];
+}
+
+async function gatherMagicCards(x, y, cards) {
+  const clones = [];
+
+  cards.forEach((card, index) => {
+    const rect = card.getBoundingClientRect();
+    const clone = card.cloneNode(true);
+
+    clone.style.position = "fixed";
+    clone.style.left = rect.left + "px";
+    clone.style.top = rect.top + "px";
+    clone.style.width = rect.width + "px";
+    clone.style.height = rect.height + "px";
+    clone.style.margin = "0";
+    clone.style.zIndex = "9999";
+    clone.style.pointerEvents = "none";
+    clone.style.animation = "none";
+    clone.style.transition =
+      "transform .85s cubic-bezier(.2,.8,.2,1), opacity .7s ease";
+
+    document.body.appendChild(clone);
+    clones.push(clone);
+
+    const dx = x - (rect.left + rect.width / 2);
+    const dy = y - (rect.top + rect.height / 2);
+
+    requestAnimationFrame(() => {
+      clone.style.transform =
+        `translate(${dx}px,${dy}px) rotate(${720 + index * 90}deg) scale(.08)`;
+      clone.style.opacity = "0";
+    });
+  });
+
+  cardContainer.style.opacity = "0";
+  await wait(900);
+  clones.forEach(clone => clone.remove());
+}
+
+async function revealMagicCard(selectedCard, x, y, isSummon = false) {
+  if (magicBusy || currentPage !== 3) return;
+
+  magicBusy = true;
+
+  const cards = [...cardContainer.querySelectorAll(".flying-card")];
+
+  if (!selectedCard || !cards.length) {
+    magicBusy = false;
+    return;
+  }
+
+  if (isSummon) {
+    summonEffect.style.left = x + "px";
+    summonEffect.style.top = y + "px";
+    summonEffect.classList.add("active");
+
+    await gatherMagicCards(x, y, cards);
+
+    summonEffect.classList.remove("active");
+    await wait(150);
+  } else {
+    cardContainer.style.opacity = "0";
+  }
+
+  revealWish.textContent = "";
+  cardReveal.classList.remove("slide-away");
+  cardReveal.classList.add("show");
+  cardReveal.setAttribute("aria-hidden", "false");
+
+  await wait(900);
+  await typeMagicWish(sharedWish);
+
+  // Để người nhận đọc lời chúc trước khi chuyển cảnh
+  await wait(2600);
+
+  createIceSnow();
+  iceWorld.classList.add("show");
+  iceWorld.setAttribute("aria-hidden", "false");
+
+  await wait(1000);
+
+  cardReveal.classList.add("slide-away");
+
+  await wait(1300);
+
+  // Cảnh băng tuyết giữ nguyên sau khi lá bài rời màn hình
+  magicBusy = false;
+}
+
+// Cách 1: chạm vào lá bài để chọn
+cardContainer.addEventListener("click", (event) => {
+  if (suppressNextClick) {
+    suppressNextClick = false;
+    return;
+  }
+
+  if (magicBusy) return;
+
+  const card = event.target.closest(".flying-card");
+  if (!card) return;
+
+  const rect = card.getBoundingClientRect();
+
+  revealMagicCard(
+    card,
+    rect.left + rect.width / 2,
+    rect.top + rect.height / 2,
+    false
+  );
+});
+
+// Cách 2: nhấn giữ tại bất kỳ điểm nào trên vũ trụ
+universe.addEventListener("pointerdown", (event) => {
+  if (magicBusy || currentPage !== 3) return;
+  if (event.target.closest("#backToPage2")) return;
+
+  // Nếu chạm trực tiếp vào một lá bài thì ưu tiên cách chọn bài.
+  if (event.target.closest(".flying-card")) return;
+
+  const cards = [...cardContainer.querySelectorAll(".flying-card")];
+  if (!cards.length) return;
+
+  holdTriggered = false;
+  pointerStartX = event.clientX;
+  pointerStartY = event.clientY;
+
+  holdTimer = setTimeout(async () => {
+    holdTriggered = true;
+    suppressNextClick = true;
+
+    const selectedCard = getRandomMagicCard(cards);
+
+    await revealMagicCard(
+      selectedCard,
+      pointerStartX,
+      pointerStartY,
+      true
+    );
+  }, HOLD_DURATION);
+});
+
+universe.addEventListener("pointermove", (event) => {
+  if (!holdTimer) return;
+
+  const dx = event.clientX - pointerStartX;
+  const dy = event.clientY - pointerStartY;
+
+  if (Math.hypot(dx, dy) > 18) {
+    clearTimeout(holdTimer);
+    holdTimer = null;
+  }
+});
+
+function stopMagicHold() {
+  if (holdTimer) {
+    clearTimeout(holdTimer);
+    holdTimer = null;
+  }
+}
+
+universe.addEventListener("pointerup", stopMagicHold);
+universe.addEventListener("pointercancel", stopMagicHold);
+universe.addEventListener("pointerleave", stopMagicHold);
+</script>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#130d20">
+<title>The Little Notebook · Universe</title>
+
+<style>
+:root {
+  --paper: #f6ead7;
+  --ink: #443329;
+  --purple: #261536;
+  --lavender: #dfc0ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  overflow: hidden;
+  background: #130d20;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+}
+
+/* =========================
+   CÁC TRANG SỔ TAY
+========================= */
+
+.page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  background:
+    radial-gradient(ellipse at 15% 20%, #fff8e8 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 85%, #e9d4b8 0%, transparent 45%),
+    #f1e2ca;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .7s ease, visibility .7s ease;
+  z-index: 1;
+}
+
+.page.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.paper {
+  position: relative;
+  width: min(100%, 560px);
+  min-height: min(76vh, 610px);
+  padding: clamp(25px, 7vw, 48px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 1px solid rgba(113, 77, 44, .22);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 31px,
+      rgba(123, 93, 65, .06) 32px
+    ),
+    rgba(255, 249, 236, .94);
+  box-shadow: 0 22px 65px rgba(59, 36, 20, .2);
+}
+
+.paper::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(125, 91, 61, .18);
+  pointer-events: none;
+}
+
+.eyebrow {
+  color: #9b7960;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .22em;
+  font-size: 10px;
+}
+
+.paper h1 {
+  font-size: clamp(30px, 7vw, 46px);
+  font-weight: normal;
+  line-height: 1.25;
+  margin: 22px 0;
+}
+
+.paper p {
+  max-width: 390px;
+  font-size: clamp(16px, 4vw, 19px);
+  line-height: 1.9;
+}
+
+.paper .small-note {
+  color: #927963;
+  font-size: 13px;
+  margin-top: 20px;
+}
+
+.action-button {
+  margin-top: 28px;
+  padding: 12px 22px;
+  border: 1px solid #8c6b50;
+  color: #553c2d;
+  background: rgba(255, 250, 238, .8);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background .25s, transform .25s;
+}
+
+.action-button:hover {
+  background: #f0dfc5;
+  transform: translateY(-2px);
+}
+
+/* Bìa sổ */
+
+.cover {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  text-align: center;
+  color: #f5e5cc;
+  background:
+    radial-gradient(ellipse at 50% 35%, #75513e, transparent 65%),
+    linear-gradient(145deg, #4c3029, #211a19);
+  border: 5px double rgba(236, 209, 165, .5);
+  transform-origin: left center;
+  transition: transform 1.2s cubic-bezier(.65, 0, .35, 1);
+  backface-visibility: hidden;
+}
+
+.cover h1 {
+  font-size: clamp(30px, 8vw, 49px);
+  font-weight: normal;
+  line-height: 1.25;
+}
+
+.cover p {
+  color: #d9c1a5;
+  letter-spacing: .08em;
+}
+
+.cover button {
+  margin-top: 24px;
+  padding: 12px 24px;
+  color: #f6e8d0;
+  background: transparent;
+  border: 1px solid rgba(246, 232, 208, .6);
+  cursor: pointer;
+}
+
+.cover.open {
+  transform: perspective(1400px) rotateY(-112deg);
+  pointer-events: none;
+}
+
+.page.leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.page.ripping {
+  animation: paperRip .75s ease forwards;
+}
+
+@keyframes paperRip {
+  0% { clip-path: inset(0); transform: scale(1); }
+  35% { clip-path: polygon(0 0,100% 0,100% 42%,52% 49%,100% 56%,100% 100%,0 100%); }
+  100% { clip-path: polygon(0 0,100% 0,100% 0,50% 0,0 0); transform: scale(1.05); opacity: 0; }
+}
+
+/* =========================
+   VŨ TRỤ
+========================= */
+
+.universe {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% 48%, #302043 0%, #1a102a 43%, #0c0915 100%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 1s ease, visibility 1s ease;
+  z-index: 5;
+  touch-action: pan-y;
+}
+
+.universe.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.cosmic-background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cosmic-glow {
+  position: absolute;
+  width: 75vw;
+  height: 75vw;
+  max-width: 700px;
+  max-height: 700px;
+  border-radius: 50%;
+  left: -20%;
+  top: 10%;
+  background: rgba(105, 51, 157, .13);
+  filter: blur(75px);
+}
+
+.cosmic-glow.secondary {
+  left: auto;
+  right: -30%;
+  top: 45%;
+  background: rgba(83, 64, 171, .14);
+}
+
+.star-field {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 7px rgba(230, 207, 255, .9);
+  animation: twinkle var(--duration, 3s) ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  from { opacity: .2; transform: scale(.65); }
+  to { opacity: 1; transform: scale(1.3); }
+}
+
+.shooting-star {
+  position: absolute;
+  width: 115px;
+  height: 1px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, #fff, #d9b3ff);
+  transform: rotate(-35deg);
+  filter: drop-shadow(0 0 5px #d3a5ff);
+  animation: shootStar 7s linear infinite;
+}
+
+.shooting-star.one {
+  top: 18%;
+  left: -150px;
+}
+
+.shooting-star.two {
+  top: 42%;
+  left: -150px;
+  animation-delay: 3.5s;
+  animation-duration: 9s;
+}
+
+@keyframes shootStar {
+  0%, 65% { opacity: 0; transform: translate(0, 0) rotate(-35deg); }
+  68% { opacity: 1; }
+  84% { opacity: .8; transform: translate(125vw, 48vh) rotate(-35deg); }
+  85%, 100% { opacity: 0; }
+}
+
+.card-sparkles {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  color: #e5c7ff;
+  text-shadow: 0 0 12px #c18cff;
+  animation: sparkleFloat var(--duration, 4s) ease-in-out infinite alternate;
+}
+
+@keyframes sparkleFloat {
+  from { transform: translateY(8px) rotate(0deg); opacity: .15; }
+  to { transform: translateY(-14px) rotate(90deg); opacity: .9; }
+}
+
+/* Các lá bài */
+
+.flying-cards {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity .55s ease;
+}
+
+.flying-card {
+  position: absolute;
+  width: clamp(65px, 17vw, 105px);
+  aspect-ratio: 2 / 3;
+  border-radius: 9px;
+  padding: 5px;
+  border: 1px solid rgba(255,255,255,.6);
+  background: linear-gradient(145deg, #f8efff, #c6a7e9 35%, #3c2358);
+  box-shadow: 0 7px 25px rgba(0,0,0,.35), 0 0 18px rgba(180,125,255,.2);
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: filter .25s;
+  animation: cardFloat var(--float-time, 6s) ease-in-out infinite alternate;
+}
+
+.flying-card:hover {
+  filter: brightness(1.25);
+}
+
+.card-face {
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  border: 1px solid rgba(63, 36, 83, .35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.55), transparent 55%),
+    linear-gradient(150deg, #e9d7ff, #9b75c5);
+  color: #422751;
+}
+
+.card-face::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(65, 37, 88, .35);
+  border-radius: 3px;
+}
+
+.card-face .card-mark {
+  font-size: clamp(18px, 5vw, 28px);
+}
+
+.card-face .card-name {
+  font-family: Arial, sans-serif;
+  font-size: 9px;
+  letter-spacing: .08em;
+  margin-top: 5px;
+}
+
+.card-face .corner {
+  position: absolute;
+  font-size: 12px;
+  top: 5px;
+  left: 6px;
+}
+
+.card-face .corner.bottom {
+  top: auto;
+  left: auto;
+  bottom: 5px;
+  right: 6px;
+  transform: rotate(180deg);
+}
+
+@keyframes cardFloat {
+  from { transform: translateY(-7px) rotate(var(--rotation, -8deg)); }
+  to { transform: translateY(12px) rotate(calc(var(--rotation, -8deg) + 7deg)); }
+}
+
+#backToPage2 {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 70;
+  padding: 10px 15px;
+  border: 1px solid rgba(220, 190, 255, .35);
+  border-radius: 999px;
+  background: rgba(25, 12, 45, .55);
+  color: #e5d4ff;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: .25s;
+}
+
+#backToPage2:hover {
+  background: rgba(150, 100, 220, .2);
+  transform: translateX(-3px);
+}
+
+/* =========================
+   TRIỆU HỒI CÁC LÁ BÀI
+========================= */
+
+.summon-effect {
+  position: fixed;
+  z-index: 20;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+}
+
+.summon-effect.active { opacity: 1; }
+
+.summon-ring {
+  position: absolute;
+  inset: -30px;
+  border: 1px solid rgba(222, 182, 255, .9);
+  border-radius: 50%;
+  box-shadow: 0 0 25px rgba(173, 106, 255, .5);
+  animation: summonSpin .9s linear infinite;
+}
+
+.summon-ring.second {
+  inset: -55px;
+  border-style: dashed;
+  animation-direction: reverse;
+  animation-duration: 1.3s;
+}
+
+.summon-core {
+  position: absolute;
+  inset: -14px;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 25px;
+  text-shadow: 0 0 18px #d7a4ff;
+  animation: corePulse .6s ease-in-out infinite alternate;
+}
+
+@keyframes summonSpin {
+  to { transform: rotate(360deg) scale(1.15); }
+}
+
+@keyframes corePulse {
+  to { transform: scale(1.5); opacity: .55; }
+}
+
+/* =========================
+   LÁ BÀI VÀ LỜI CHÚC
+========================= */
+
+.card-reveal {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1200px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.card-reveal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.reveal-card {
+  width: min(76vw, 340px);
+  height: min(112vw, 490px);
+  max-height: 72vh;
+  padding: 9px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #f5e7ff, #8f60bb 35%, #251437 70%, #d6b7ff);
+  box-shadow: 0 0 30px rgba(190,135,255,.65), 0 0 100px rgba(134,73,214,.35);
+  transform: translateZ(-700px) scale(.15) rotateY(25deg);
+  opacity: 0;
+}
+
+.card-reveal.show .reveal-card {
+  animation: cardShootIn .85s cubic-bezier(.16,.8,.25,1) forwards;
+}
+
+.reveal-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.65);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 27px;
+  text-align: center;
+  color: #fff4ff;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(161,107,210,.65), transparent 60%),
+    linear-gradient(160deg, #28163d, #100b20 70%, #352046);
+}
+
+.reveal-card-inner::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(235,208,255,.3);
+  border-radius: 9px;
+}
+
+.reveal-card-symbol {
+  font-size: 35px;
+  color: #f4d9ff;
+  text-shadow: 0 0 20px #d9a4ff;
+}
+
+.reveal-card-symbol.bottom { transform: rotate(180deg); }
+
+.reveal-card-wish {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  font-size: clamp(16px, 4.3vw, 23px);
+  line-height: 1.8;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  text-shadow: 0 0 15px rgba(230,191,255,.25);
+}
+
+@keyframes cardShootIn {
+  0% { opacity: 0; transform: translateZ(-700px) scale(.15) rotateY(25deg); }
+  65% { opacity: 1; transform: translateZ(60px) scale(1.06) rotateY(-5deg); }
+  100% { opacity: 1; transform: translateZ(0) scale(1) rotateY(0); }
+}
+
+.card-reveal.slide-away .reveal-card {
+  animation: cardSlideDown 1.15s cubic-bezier(.65,0,.8,.25) forwards;
+}
+
+@keyframes cardSlideDown {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  60% { opacity: 1; transform: translateY(45vh) scale(.95) rotate(4deg); }
+  100% { opacity: 0; transform: translateY(115vh) scale(.8) rotate(9deg); }
+}
+
+/* =========================
+   THẾ GIỚI BĂNG TUYẾT
+========================= */
+
+.ice-world {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(213,242,255,.65), transparent 38%),
+    linear-gradient(to bottom, #101b3a 0%, #4b7598 48%, #c5e4f0 82%, #effaff 100%);
+  transition: opacity 1.4s ease, visibility 1.4s;
+}
+
+.ice-world.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.ice-moon {
+  position: absolute;
+  top: 12%;
+  right: 16%;
+  width: clamp(50px, 10vw, 100px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #effaff;
+  box-shadow: 0 0 25px rgba(222,246,255,.8), 0 0 90px rgba(173,223,255,.55);
+}
+
+.ice-mountains {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: 18%;
+  height: 48%;
+  background: linear-gradient(145deg, #e5f7ff, #8bbbd3 55%, #446e91);
+  clip-path: polygon(0 100%,0 65%,12% 30%,20% 57%,36% 5%,48% 53%,60% 17%,74% 60%,87% 28%,100% 62%,100% 100%);
+  filter: drop-shadow(0 -8px 20px rgba(218,244,255,.3));
+}
+
+.ice-ground {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: -8%;
+  height: 37%;
+  border-radius: 50% 50% 0 0;
+  background: linear-gradient(to bottom, #e9f9ff, #b9dfef);
+  box-shadow: 0 -15px 60px rgba(221,245,255,.35);
+}
+
+.ice-snow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.ice-snow span {
+  position: absolute;
+  top: -15px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 7px rgba(255,255,255,.9);
+  animation: snowFall linear infinite;
+}
+
+@keyframes snowFall {
+  from { transform: translate3d(0,-5vh,0); }
+  to { transform: translate3d(35px,110vh,0); }
+}
+
+@media (max-width: 600px) {
+  #backToPage2 {
+    top: 14px;
+    left: 14px;
+    font-size: 12px;
+    padding: 9px 13px;
+  }
+
+  .paper { min-height: 72vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star, .sparkle, .flying-card, .summon-ring,
+  .summon-core, .ice-snow span {
+    animation-duration: 8s;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     TRANG 1: BÌA SỔ
+========================= -->
+
+<section class="page active" id="page1">
+  <div class="paper">
+    <div class="eyebrow">A little notebook</div>
+    <h1>Một cuốn sổ nhỏ</h1>
+    <p>Đôi khi, những điều nhỏ bé nhất lại cất giữ những điều đáng nhớ nhất.</p>
+    <div class="small-note">Lật mở để khám phá · 20/10</div>
+  </div>
+
+  <div class="cover" id="cover">
+    <div class="eyebrow">Một món quà nhỏ</div>
+    <h1>The Little<br>Notebook</h1>
+    <p>20 · 10 · Một điều muốn gửi</p>
+    <button id="openCover">Mở cuốn sổ ✦</button>
+  </div>
+</section>
+
+<!-- =========================
+     TRANG 2: TÂM TÌNH
+========================= -->
+
+<section class="page" id="page2">
+  <div class="paper">
+    <div class="eyebrow">Trang thứ hai</div>
+    <h1>Một chút tâm tình</h1>
+    <p>
+      Có những điều không cần phải thật lớn lao mới trở nên đặc biệt.
+      Đôi khi, chỉ một lời chúc nhỏ cũng đủ khiến một ngày bình thường
+      trở nên đáng nhớ hơn một chút.
+    </p>
+    <p>
+      Và phía sau trang giấy này, có một nơi đang chờ được khám phá.
+    </p>
+    <button class="action-button" id="exploreUniverse">
+      Khám phá vũ trụ ✦
+    </button>
+  </div>
+</section>
+
+<!-- =========================
+     TRANG 3: VŨ TRỤ LÁ BÀI
+========================= -->
+
+<section class="universe" id="universe">
+
+  <div class="cosmic-background" aria-hidden="true">
+    <div class="cosmic-glow"></div>
+    <div class="cosmic-glow secondary"></div>
+  </div>
+
+  <div class="star-field" id="starField" aria-hidden="true"></div>
+
+  <div class="card-sparkles" id="cardSparkles" aria-hidden="true"></div>
+
+  <div class="flying-cards" id="flying-cards"></div>
+
+  <div class="shooting-star one"></div>
+  <div class="shooting-star two"></div>
+
+  <button id="backToPage2">← Trở về trang 2</button>
+
+  <!-- Hiệu ứng triệu hồi bài -->
+  <div class="summon-effect" id="summonEffect" aria-hidden="true">
+    <div class="summon-ring"></div>
+    <div class="summon-ring second"></div>
+    <div class="summon-core">✦</div>
+  </div>
+
+  <!-- Lá bài phóng lớn -->
+  <div class="card-reveal" id="cardReveal" aria-hidden="true">
+    <div class="reveal-card" id="revealCard">
+      <div class="reveal-card-inner">
+        <div class="reveal-card-symbol">✦</div>
+        <div class="reveal-card-wish" id="revealWish"></div>
+        <div class="reveal-card-symbol bottom">✦</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phong cảnh băng tuyết -->
+  <div class="ice-world" id="iceWorld" aria-hidden="true">
+    <div class="ice-moon"></div>
+    <div class="ice-mountains"></div>
+    <div class="ice-ground"></div>
+    <div class="ice-snow" id="iceSnow"></div>
+  </div>
+
+</section>
+
+<script>
+/* =========================
+   ĐIỀU HƯỚNG SỔ TAY
+========================= */
+
+const page1 = document.getElementById("page1");
+const page2 = document.getElementById("page2");
+const cover = document.getElementById("cover");
+const universe = document.getElementById("universe");
+
+const openCover = document.getElementById("openCover");
+const exploreUniverse = document.getElementById("exploreUniverse");
+const backToPage2 = document.getElementById("backToPage2");
+
+let currentPage = 1;
+let pageBusy = false;
+let universeStarted = false;
+
+function later(callback, delay) {
+  return setTimeout(callback, delay);
+}
+
+openCover.addEventListener("click", () => {
+  if (pageBusy) return;
+  pageBusy = true;
+
+  cover.classList.add("open");
+
+  later(() => {
+    page1.classList.remove("active");
+    page2.classList.add("active");
+    currentPage = 2;
+    pageBusy = false;
+  }, 850);
+});
+
+exploreUniverse.addEventListener("click", () => {
+  if (pageBusy || currentPage !== 2) return;
+  pageBusy = true;
+
+  page2.classList.add("leaving", "ripping");
+
+  later(() => {
+    page2.classList.remove("active", "leaving", "ripping");
+    universe.classList.add("active");
+    currentPage = 3;
+    pageBusy = false;
+
+    if (!universeStarted) {
+      createCosmos();
+      createFlyingCards();
+      universeStarted = true;
+    }
+  }, 650);
+});
+
+backToPage2.addEventListener("click", () => {
+  if (pageBusy || magicBusy) return;
+  pageBusy = true;
+
+  universe.classList.remove("active");
+
+  later(() => {
+    page2.classList.remove("leaving", "ripping");
+    page2.classList.add("active");
+    currentPage = 2;
+    pageBusy = false;
+  }, 650);
+});
+
+/* =========================
+   TẠO SAO VÀ ÁNH SÁNG
+========================= */
+
+const starField = document.getElementById("starField");
+const cardSparkles = document.getElementById("cardSparkles");
+
+function createCosmos() {
+  for (let i = 0; i < 115; i++) {
+    const star = document.createElement("span");
+    star.className = "star";
+
+    const size = Math.random() * 2.2 + .6;
+    star.style.width = size + "px";
+    star.style.height = size + "px";
+    star.style.left = Math.random() * 100 + "%";
+    star.style.top = Math.random() * 100 + "%";
+    star.style.setProperty("--duration", (2 + Math.random() * 4) + "s");
+    star.style.animationDelay = (-Math.random() * 5) + "s";
+
+    starField.appendChild(star);
+  }
+
+  for (let i = 0; i < 28; i++) {
+    const sparkle = document.createElement("span");
+    sparkle.className = "sparkle";
+    sparkle.textContent = Math.random() > .5 ? "✦" : "·";
+    sparkle.style.left = Math.random() * 100 + "%";
+    sparkle.style.top = Math.random() * 100 + "%";
+    sparkle.style.fontSize = (8 + Math.random() * 13) + "px";
+    sparkle.style.setProperty("--duration", (3 + Math.random() * 5) + "s");
+    sparkle.style.animationDelay = (-Math.random() * 5) + "s";
+
+    cardSparkles.appendChild(sparkle);
+  }
+}
+
+/* =========================
+   TẠO CÁC LÁ BÀI BAY
+========================= */
+
+const cardContainer = document.getElementById("flying-cards");
+
+const cardDeck = [
+  { name: "POKER", mark: "♠" },
+  { name: "UNO", mark: "✦" },
+  { name: "WEREWOLF", mark: "☾" },
+  { name: "POKER", mark: "♥" },
+  { name: "UNO", mark: "★" },
+  { name: "WEREWOLF", mark: "✧" },
+  { name: "POKER", mark: "♦" },
+  { name: "UNO", mark: "✦" },
+  { name: "WEREWOLF", mark: "☽" },
+  { name: "POKER", mark: "♣" },
+  { name: "UNO", mark: "✧" },
+  { name: "POKER", mark: "★" }
+];
+
+function createCardFace(cardData) {
+  const face = document.createElement("div");
+  face.className = "card-face";
+
+  const cornerTop = document.createElement("span");
+  cornerTop.className = "corner";
+  cornerTop.textContent = cardData.mark;
+
+  const mark = document.createElement("span");
+  mark.className = "card-mark";
+  mark.textContent = cardData.mark;
+
+  const name = document.createElement("span");
+  name.className = "card-name";
+  name.textContent = cardData.name;
+
+  const cornerBottom = document.createElement("span");
+  cornerBottom.className = "corner bottom";
+  cornerBottom.textContent = cardData.mark;
+
+  face.append(cornerTop, mark, name, cornerBottom);
+  return face;
+}
+
+function createFlyingCards() {
+  cardContainer.innerHTML = "";
+
+  cardDeck.forEach((data, index) => {
+    const card = document.createElement("div");
+    card.className = "flying-card";
+    card.appendChild(createCardFace(data));
+
+    const x = 7 + Math.random() * 79;
+    const y = 12 + Math.random() * 72;
+
+    card.style.left = x + "%";
+    card.style.top = y + "%";
+    card.style.setProperty("--rotation", (-20 + Math.random() * 40) + "deg");
+    card.style.setProperty("--float-time", (4 + Math.random() * 4) + "s");
+    card.style.animationDelay = (-Math.random() * 5) + "s";
+    card.dataset.cardIndex = String(index);
+
+    cardContainer.appendChild(card);
+  });
+}
+
+/* =========================
+   CHỌN BÀI VÀ LỜI CHÚC
+========================= */
+
+const cardReveal = document.getElementById("cardReveal");
+const revealWish = document.getElementById("revealWish");
+const summonEffect = document.getElementById("summonEffect");
+const iceWorld = document.getElementById("iceWorld");
+const iceSnow = document.getElementById("iceSnow");
+
+let magicBusy = false;
+let holdTimer = null;
+let holdTriggered = false;
+let suppressNextClick = false;
+let pointerStartX = 0;
+let pointerStartY = 0;
+
+const HOLD_DURATION = 650;
+
+const sharedWish = `Chúc mọi điều tốt đẹp sẽ tìm đến.
+Mong những ngày vui luôn dài hơn,
+những ngày buồn sẽ ngắn lại,
+và luôn có đủ dũng khí để theo đuổi
+những điều khiến trái tim hạnh phúc.`;
+
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function createIceSnow() {
+  if (iceSnow.children.length) return;
+
+  for (let i = 0; i < 65; i++) {
+    const snow = document.createElement("span");
+
+    snow.style.left = Math.random() * 100 + "%";
+    snow.style.animationDuration = (5 + Math.random() * 8) + "s";
+    snow.style.animationDelay = (-Math.random() * 12) + "s";
+    snow.style.opacity = .3 + Math.random() * .7;
+
+    const size = 2 + Math.random() * 3;
+    snow.style.width = size + "px";
+    snow.style.height = size + "px";
+
+    iceSnow.appendChild(snow);
+  }
+}
+
+async function typeMagicWish(text) {
+  revealWish.textContent = "";
+
+  for (const character of text) {
+    revealWish.textContent += character;
+    await wait(35);
+  }
+}
+
+function getRandomMagicCard(cards) {
+  return cards[Math.floor(Math.random() * cards.length)];
+}
+
+async function gatherMagicCards(x, y, cards) {
+  const clones = [];
+
+  cards.forEach((card, index) => {
+    const rect = card.getBoundingClientRect();
+    const clone = card.cloneNode(true);
+
+    clone.style.position = "fixed";
+    clone.style.left = rect.left + "px";
+    clone.style.top = rect.top + "px";
+    clone.style.width = rect.width + "px";
+    clone.style.height = rect.height + "px";
+    clone.style.margin = "0";
+    clone.style.zIndex = "9999";
+    clone.style.pointerEvents = "none";
+    clone.style.animation = "none";
+    clone.style.transition =
+      "transform .85s cubic-bezier(.2,.8,.2,1), opacity .7s ease";
+
+    document.body.appendChild(clone);
+    clones.push(clone);
+
+    const dx = x - (rect.left + rect.width / 2);
+    const dy = y - (rect.top + rect.height / 2);
+
+    requestAnimationFrame(() => {
+      clone.style.transform =
+        `translate(${dx}px,${dy}px) rotate(${720 + index * 90}deg) scale(.08)`;
+      clone.style.opacity = "0";
+    });
+  });
+
+  cardContainer.style.opacity = "0";
+  await wait(900);
+  clones.forEach(clone => clone.remove());
+}
+
+async function revealMagicCard(selectedCard, x, y, isSummon = false) {
+  if (magicBusy || currentPage !== 3) return;
+
+  magicBusy = true;
+
+  const cards = [...cardContainer.querySelectorAll(".flying-card")];
+
+  if (!selectedCard || !cards.length) {
+    magicBusy = false;
+    return;
+  }
+
+  if (isSummon) {
+    summonEffect.style.left = x + "px";
+    summonEffect.style.top = y + "px";
+    summonEffect.classList.add("active");
+
+    await gatherMagicCards(x, y, cards);
+
+    summonEffect.classList.remove("active");
+    await wait(150);
+  } else {
+    cardContainer.style.opacity = "0";
+  }
+
+  revealWish.textContent = "";
+  cardReveal.classList.remove("slide-away");
+  cardReveal.classList.add("show");
+  cardReveal.setAttribute("aria-hidden", "false");
+
+  await wait(900);
+  await typeMagicWish(sharedWish);
+
+  // Để người nhận đọc lời chúc trước khi chuyển cảnh
+  await wait(2600);
+
+  createIceSnow();
+  iceWorld.classList.add("show");
+  iceWorld.setAttribute("aria-hidden", "false");
+
+  await wait(1000);
+
+  cardReveal.classList.add("slide-away");
+
+  await wait(1300);
+
+  // Cảnh băng tuyết giữ nguyên sau khi lá bài rời màn hình
+  magicBusy = false;
+}
+
+// Cách 1: chạm vào lá bài để chọn
+cardContainer.addEventListener("click", (event) => {
+  if (suppressNextClick) {
+    suppressNextClick = false;
+    return;
+  }
+
+  if (magicBusy) return;
+
+  const card = event.target.closest(".flying-card");
+  if (!card) return;
+
+  const rect = card.getBoundingClientRect();
+
+  revealMagicCard(
+    card,
+    rect.left + rect.width / 2,
+    rect.top + rect.height / 2,
+    false
+  );
+});
+
+// Cách 2: nhấn giữ tại bất kỳ điểm nào trên vũ trụ
+universe.addEventListener("pointerdown", (event) => {
+  if (magicBusy || currentPage !== 3) return;
+  if (event.target.closest("#backToPage2")) return;
+
+  // Nếu chạm trực tiếp vào một lá bài thì ưu tiên cách chọn bài.
+  if (event.target.closest(".flying-card")) return;
+
+  const cards = [...cardContainer.querySelectorAll(".flying-card")];
+  if (!cards.length) return;
+
+  holdTriggered = false;
+  pointerStartX = event.clientX;
+  pointerStartY = event.clientY;
+
+  holdTimer = setTimeout(async () => {
+    holdTriggered = true;
+    suppressNextClick = true;
+
+    const selectedCard = getRandomMagicCard(cards);
+
+    await revealMagicCard(
+      selectedCard,
+      pointerStartX,
+      pointerStartY,
+      true
+    );
+  }, HOLD_DURATION);
+});
+
+universe.addEventListener("pointermove", (event) => {
+  if (!holdTimer) return;
+
+  const dx = event.clientX - pointerStartX;
+  const dy = event.clientY - pointerStartY;
+
+  if (Math.hypot(dx, dy) > 18) {
+    clearTimeout(holdTimer);
+    holdTimer = null;
+  }
+});
+
+function stopMagicHold() {
+  if (holdTimer) {
+    clearTimeout(holdTimer);
+    holdTimer = null;
+  }
+}
+
+universe.addEventListener("pointerup", stopMagicHold);
+universe.addEventListener("pointercancel", stopMagicHold);
+universe.addEventListener("pointerleave", stopMagicHold);
+</script>
+
+</body>
+</html>
+
