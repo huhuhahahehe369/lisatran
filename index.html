@@ -3,839 +3,1732 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#130d20">
-<title>The Little Notebook · Universe</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#171126">
+<title>The Little Notebook</title>
 
 <style>
 :root {
-  --paper: #f6ead7;
-  --ink: #443329;
-  --purple: #261536;
-  --lavender: #dfc0ff;
+  --paper: #f5ead5;
+  --ink: #594333;
+  --muted: #94775c;
+  --night: #100b20;
+  --purple: #a99ad6;
+  --gold: #e8c88b;
 }
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
   margin: 0;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
 }
 
 body {
   overflow: hidden;
-  background: #130d20;
   font-family: Georgia, "Times New Roman", serif;
-  color: var(--ink);
-  -webkit-tap-highlight-color: transparent;
+  background: var(--paper);
 }
 
-button {
-  font: inherit;
+button { font: inherit; }
+
+.scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  perspective: 1400px;
+  isolation: isolate;
+  background: var(--paper);
 }
 
 /* =========================
-   CÁC TRANG SỔ TAY
+   NÚT BẤM
 ========================= */
 
-.page {
-  position: fixed;
-  inset: 0;
-  display: flex;
+.action {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 22px;
-  background:
-    radial-gradient(ellipse at 15% 20%, #fff8e8 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 85%, #e9d4b8 0%, transparent 45%),
-    #f1e2ca;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity .7s ease, visibility .7s ease;
+  gap: 10px;
+  min-height: 45px;
+  padding: 12px 22px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition:
+    background .25s ease,
+    color .25s ease,
+    transform .25s ease;
+}
+
+.action:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.action:active { transform: scale(.97); }
+
+/* =========================
+   TRANG GIẤY
+========================= */
+
+.paper-page {
+  position: absolute;
+  inset: 0;
   z-index: 1;
-}
-
-.page.active {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-.paper {
-  position: relative;
-  width: min(100%, 560px);
-  min-height: min(76vh, 610px);
-  padding: clamp(25px, 7vw, 48px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  text-align: center;
-  border: 1px solid rgba(113, 77, 44, .22);
+  justify-content: center;
+  overflow-y: auto;
+  padding:
+    max(42px, env(safe-area-inset-top))
+    27px
+    max(45px, env(safe-area-inset-bottom))
+    43px;
   background:
     repeating-linear-gradient(
-      0deg,
+      to bottom,
       transparent 0,
       transparent 31px,
-      rgba(123, 93, 65, .06) 32px
+      rgba(133, 100, 66, .10) 32px
     ),
-    rgba(255, 249, 236, .94);
-  box-shadow: 0 22px 65px rgba(59, 36, 20, .2);
+    radial-gradient(ellipse at 20% 10%, #fff9e9, transparent 60%),
+    var(--paper);
+  color: var(--ink);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(25px);
+  transition:
+    opacity .65s ease,
+    transform .65s ease,
+    visibility .65s;
 }
 
-.paper::before {
+.paper-page::before {
   content: "";
   position: absolute;
-  inset: 12px;
-  border: 1px solid rgba(125, 91, 61, .18);
+  top: 0;
+  bottom: 0;
+  left: 28px;
+  width: 1px;
+  background: rgba(167, 93, 79, .34);
   pointer-events: none;
+}
+
+.paper-page.active {
+  z-index: 2;
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.paper-page.leaving {
+  opacity: 0;
+  transform: translateX(-25px);
+  pointer-events: none;
+}
+
+.paper-content {
+  width: 100%;
+  max-width: 410px;
+  margin: auto;
+  text-align: center;
 }
 
 .eyebrow {
-  color: #9b7960;
-  font-family: Arial, sans-serif;
-  text-transform: uppercase;
-  letter-spacing: .22em;
+  margin-bottom: 23px;
+  color: var(--muted);
   font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
 }
 
-.paper h1 {
-  font-size: clamp(30px, 7vw, 46px);
+.paper-title {
+  margin: 0 0 25px;
+  font-size: clamp(27px, 7vw, 37px);
   font-weight: normal;
-  line-height: 1.25;
-  margin: 22px 0;
+  line-height: 1.35;
 }
 
-.paper p {
-  max-width: 390px;
-  font-size: clamp(16px, 4vw, 19px);
-  line-height: 1.9;
+.paper-text {
+  color: #78604b;
+  font-size: clamp(14px, 3.8vw, 17px);
+  line-height: 1.95;
+  text-align: left;
 }
 
-.paper .small-note {
-  color: #927963;
-  font-size: 13px;
-  margin-top: 20px;
+.paper-text p {
+  margin: 0 0 16px;
+  text-indent: 1.5em;
 }
 
-.action-button {
-  margin-top: 28px;
-  padding: 12px 22px;
-  border: 1px solid #8c6b50;
-  color: #553c2d;
-  background: rgba(255, 250, 238, .8);
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background .25s, transform .25s;
+.signature {
+  margin-top: 25px !important;
+  text-align: right;
+  text-indent: 0 !important;
+  font-style: italic;
 }
 
-.action-button:hover {
-  background: #f0dfc5;
-  transform: translateY(-2px);
+.signature span {
+  color: var(--muted);
+  font-size: 12px;
 }
 
-/* Bìa sổ */
+.paper-decoration {
+  margin: 24px 0;
+  color: var(--muted);
+  font-size: 19px;
+  letter-spacing: 9px;
+}
+
+.page-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 27px;
+}
+
+.page-number {
+  position: absolute;
+  right: 25px;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  color: #9c8268;
+  font-size: 11px;
+}
+
+/* =========================
+   BÌA VỞ
+========================= */
 
 .cover {
   position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 10;
+  overflow: hidden;
+  transform-origin: left center;
+  background: radial-gradient(ellipse at center, #fff8e9, #e9d5b5);
+  box-shadow: inset -8px 0 22px rgba(70, 46, 27, .12);
+  transition:
+    transform 1.4s cubic-bezier(.65, 0, .25, 1),
+    opacity .5s ease,
+    visibility .5s;
+}
+
+.cover::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(112, 77, 47, .5);
+  pointer-events: none;
+}
+
+.cover::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(112, 77, 47, .18);
+  pointer-events: none;
+}
+
+.cover-content { position: absolute; inset: 28px; }
+
+.cover-title-wrap {
+  position: absolute;
+  top: 42%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  transform: translateY(-50%);
+}
+
+.cover-small-title {
+  margin-bottom: 18px;
+  color: #8f7254;
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.cover-title {
+  margin: 0;
+  color: #5b4030;
+  font-size: clamp(20px, 6vw, 32px);
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.cover-subtitle {
+  margin-top: 16px;
+  color: #92775e;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.cover-footer {
+  position: absolute;
+  top: 58%;
+  width: 100%;
+  color: #94785e;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.cover-button {
+  position: absolute;
+  right: 0;
+  bottom: max(42px, calc(env(safe-area-inset-bottom) + 28px));
+  left: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.open-hint {
+  position: absolute;
+  right: 0;
+  bottom: max(105px, calc(env(safe-area-inset-bottom) + 92px));
+  left: 0;
+  color: #9a8067;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-align: center;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: .45; }
+  50% { opacity: 1; }
+}
+
+.corner {
+  position: absolute;
+  width: 76px;
+  height: 76px;
+  color: #9d7b55;
+}
+
+.corner svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: .8;
+}
+
+.top-left { top: 12px; left: 12px; }
+.top-right { top: 12px; right: 12px; transform: scaleX(-1); }
+.bottom-left { bottom: 12px; left: 12px; transform: scaleY(-1); }
+.bottom-right { bottom: 12px; right: 12px; transform: scale(-1); }
+
+.corner-star {
+  position: absolute;
+  color: #a4865c;
+  font-size: 12px;
+}
+
+.corner-star.one { top: 15%; left: 20%; }
+.corner-star.two { top: 35%; right: 15%; }
+
+.scene.cover-open .cover {
+  transform: rotateY(-155deg);
+  pointer-events: none;
+}
+
+.scene.cover-hidden .cover {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* =========================
+   VŨ TRỤ TÍM ĐEN
+========================= */
+
+.universe {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 25px;
+  overflow-y: auto;
+  padding:
+    max(35px, env(safe-area-inset-top))
+    22px
+    max(30px, env(safe-area-inset-bottom));
+  color: #f6e9d2;
   text-align: center;
-  color: #f5e5cc;
   background:
-    radial-gradient(ellipse at 50% 35%, #75513e, transparent 65%),
-    linear-gradient(145deg, #4c3029, #211a19);
-  border: 5px double rgba(236, 209, 165, .5);
-  transform-origin: left center;
-  transition: transform 1.2s cubic-bezier(.65, 0, .35, 1);
-  backface-visibility: hidden;
-}
-
-.cover h1 {
-  font-size: clamp(30px, 8vw, 49px);
-  font-weight: normal;
-  line-height: 1.25;
-}
-
-.cover p {
-  color: #d9c1a5;
-  letter-spacing: .08em;
-}
-
-.cover button {
-  margin-top: 24px;
-  padding: 12px 24px;
-  color: #f6e8d0;
-  background: transparent;
-  border: 1px solid rgba(246, 232, 208, .6);
-  cursor: pointer;
-}
-
-.cover.open {
-  transform: perspective(1400px) rotateY(-112deg);
-  pointer-events: none;
-}
-
-.page.leaving {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.page.ripping {
-  animation: paperRip .75s ease forwards;
-}
-
-@keyframes paperRip {
-  0% { clip-path: inset(0); transform: scale(1); }
-  35% { clip-path: polygon(0 0,100% 0,100% 42%,52% 49%,100% 56%,100% 100%,0 100%); }
-  100% { clip-path: polygon(0 0,100% 0,100% 0,50% 0,0 0); transform: scale(1.05); opacity: 0; }
-}
-
-/* =========================
-   VŨ TRỤ
-========================= */
-
-.universe {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  isolation: isolate;
-  background:
-    radial-gradient(ellipse at 50% 48%, #302043 0%, #1a102a 43%, #0c0915 100%);
+    radial-gradient(ellipse at 50% 35%, rgba(99, 64, 135, .30), transparent 48%),
+    radial-gradient(ellipse at 20% 85%, rgba(64, 54, 116, .28), transparent 40%),
+    linear-gradient(155deg, #0c0919, #171027 55%, #251831);
   opacity: 0;
   visibility: hidden;
-  pointer-events: none;
-  transition: opacity 1s ease, visibility 1s ease;
-  z-index: 5;
-  touch-action: pan-y;
+  transform: scale(1.04);
+  transition:
+    opacity 1s ease,
+    transform 1s ease,
+    visibility 1s;
+  isolation: isolate;
 }
 
 .universe.active {
   opacity: 1;
   visibility: visible;
-  pointer-events: auto;
+  transform: scale(1);
 }
+
+/* Các lớp nền nằm sau mọi lá bài */
 
 .cosmic-background {
   position: absolute;
   inset: 0;
+  z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  z-index: 0;
 }
 
 .cosmic-glow {
   position: absolute;
-  width: 75vw;
-  height: 75vw;
-  max-width: 700px;
-  max-height: 700px;
+  width: min(75vw, 650px);
+  aspect-ratio: 1;
+  top: 5%;
+  left: 5%;
   border-radius: 50%;
-  left: -20%;
-  top: 10%;
-  background: rgba(105, 51, 157, .13);
-  filter: blur(75px);
+  background: radial-gradient(
+    circle,
+    rgba(105, 65, 158, .22),
+    rgba(76, 44, 120, .09) 40%,
+    transparent 70%
+  );
+  filter: blur(12px);
+  animation: cosmicFloat 15s ease-in-out infinite alternate;
 }
 
 .cosmic-glow.secondary {
-  left: auto;
-  right: -30%;
   top: 45%;
-  background: rgba(83, 64, 171, .14);
+  left: 50%;
+  width: min(85vw, 750px);
+  background: radial-gradient(
+    circle,
+    rgba(90, 59, 142, .22),
+    rgba(67, 45, 109, .08) 42%,
+    transparent 70%
+  );
+  animation-delay: -7s;
+  animation-duration: 19s;
 }
+
+@keyframes cosmicFloat {
+  0% { transform: translate(-10%, -5%) scale(.9); }
+  50% { transform: translate(15%, 8%) scale(1.12); }
+  100% { transform: translate(-3%, 15%) scale(1); }
+}
+
+/* Sao nền */
 
 .star-field {
   position: absolute;
-  inset: 0;
   z-index: 1;
+  inset: 0;
   pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 82% 17%, #fff 99%, transparent),
+    radial-gradient(2px 2px at 65% 32%, #d8c5ff 99%, transparent),
+    radial-gradient(1px 1px at 25% 46%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 89% 68%, #fff 99%, transparent),
+    radial-gradient(2px 2px at 15% 79%, #d8c5ff 99%, transparent),
+    radial-gradient(1px 1px at 72% 88%, #fff 99%, transparent);
+  background-size: 230px 220px;
+  animation: drift 35s linear infinite;
 }
 
-.star {
-  position: absolute;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 7px rgba(230, 207, 255, .9);
-  animation: twinkle var(--duration, 3s) ease-in-out infinite alternate;
+@keyframes drift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-220px); }
 }
 
-@keyframes twinkle {
-  from { opacity: .2; transform: scale(.65); }
-  to { opacity: 1; transform: scale(1.3); }
-}
+/* Sao băng */
 
 .shooting-star {
   position: absolute;
-  width: 115px;
-  height: 1px;
   z-index: 2;
-  pointer-events: none;
+  width: 75px;
+  height: 1px;
   opacity: 0;
-  background: linear-gradient(90deg, transparent, #fff, #d9b3ff);
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, #f4e6c6);
   transform: rotate(-35deg);
-  filter: drop-shadow(0 0 5px #d3a5ff);
-  animation: shootStar 7s linear infinite;
+  animation: shooting 5s ease-in-out infinite;
+}
+
+.shooting-star::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff4d9;
+  box-shadow: 0 0 10px #fff4d9;
 }
 
 .shooting-star.one {
-  top: 18%;
-  left: -150px;
+  top: 20%;
+  right: 8%;
+  animation-delay: 1s;
 }
 
 .shooting-star.two {
-  top: 42%;
-  left: -150px;
-  animation-delay: 3.5s;
-  animation-duration: 9s;
+  top: 35%;
+  left: 4%;
+  animation-delay: 3s;
 }
 
-@keyframes shootStar {
-  0%, 65% { opacity: 0; transform: translate(0, 0) rotate(-35deg); }
-  68% { opacity: 1; }
-  84% { opacity: .8; transform: translate(125vw, 48vh) rotate(-35deg); }
-  85%, 100% { opacity: 0; }
+@keyframes shooting {
+  0%, 65%, 100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(-35deg);
+  }
+  70% { opacity: 1; }
+  82% {
+    opacity: 0;
+    transform: translate(-55px, 40px) rotate(-35deg);
+  }
 }
+
+/* =========================
+   LÁ BÀI LƠ LỬNG
+========================= */
+
+.flying-cards {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  perspective: 900px;
+}
+
+.flying-card {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: calc(var(--w) * 1.48);
+  opacity: var(--opacity, .72);
+  transform-style: preserve-3d;
+  animation:
+    cardDrift var(--duration, 12s) ease-in-out infinite alternate,
+    cardTurn var(--turn-duration, 17s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: transform;
+}
+
+.card-face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(244, 226, 255, .55);
+  border-radius: 8px;
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, .35),
+    0 0 16px rgba(174, 137, 231, .12);
+  background: #f7f0e8;
+  color: #241b32;
+}
+
+.card-corner {
+  position: absolute;
+  top: 7%;
+  left: 9%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  font-family: Georgia, serif;
+  font-size: clamp(8px, 1.5vw, 14px);
+  font-weight: bold;
+  line-height: 1;
+}
+
+.card-corner.bottom {
+  top: auto;
+  right: 9%;
+  bottom: 7%;
+  left: auto;
+  transform: rotate(180deg);
+}
+
+.card-symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-family: Georgia, serif;
+  font-size: clamp(20px, 4.5vw, 43px);
+}
+
+.card-red { color: #b53b4a; }
+.card-black { color: #292132; }
+
+/* Lá Poker */
+
+.poker-card {
+  background:
+    radial-gradient(ellipse at center, #fffdf8, #e9dfd6);
+}
+
+.poker-card::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(91, 60, 84, .22);
+  border-radius: 5px;
+}
+
+.poker-card .card-symbol {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .08);
+}
+
+/* Lá Ma Sói */
+
+.werewolf-card {
+  background:
+    radial-gradient(ellipse at 50% 40%, #55406f, transparent 65%),
+    linear-gradient(155deg, #2c213c, #120e1f);
+  border-color: rgba(205, 173, 242, .75);
+  color: #eee0ff;
+}
+
+.werewolf-card::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(213, 185, 245, .38);
+  border-radius: 5px;
+}
+
+.werewolf-label {
+  position: absolute;
+  right: 0;
+  bottom: 11%;
+  left: 0;
+  color: #e7d5ff;
+  font-family: Georgia, serif;
+  font-size: clamp(6px, 1.2vw, 11px);
+  letter-spacing: 1.5px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.werewolf-art {
+  position: absolute;
+  inset: 20% 0 24%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.werewolf-moon {
+  width: 32%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff3d2, #bba5db 75%);
+  box-shadow: 0 0 18px rgba(221, 192, 255, .25);
+}
+
+.werewolf-emoji {
+  margin-top: -10%;
+  font-size: clamp(18px, 4vw, 38px);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .4));
+}
+
+/* Lá UNO */
+
+.uno-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e9263f;
+  border: 2px solid #fff3df;
+  border-radius: 13px;
+}
+
+.uno-card::before {
+  content: "";
+  position: absolute;
+  inset: 7%;
+  border: 2px solid rgba(255, 255, 255, .95);
+  border-radius: 50%;
+  background: #f7f0e8;
+  transform: rotate(-28deg) scaleX(.85);
+  box-shadow: inset 0 0 0 3px #e9263f;
+}
+
+.uno-symbol {
+  position: relative;
+  z-index: 1;
+  color: #e9263f;
+  font-family: Arial, sans-serif;
+  font-size: clamp(18px, 4.5vw, 42px);
+  font-weight: 1000;
+  font-style: italic;
+  letter-spacing: -3px;
+  text-shadow: 1px 1px 0 #fff;
+  transform: rotate(-28deg);
+}
+
+.uno-corner {
+  position: absolute;
+  z-index: 2;
+  top: 5%;
+  left: 9%;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: clamp(8px, 1.5vw, 13px);
+  font-weight: bold;
+}
+
+.uno-corner.bottom {
+  top: auto;
+  right: 9%;
+  bottom: 5%;
+  left: auto;
+  transform: rotate(180deg);
+}
+
+/* Mặt sau của bài */
+
+.card-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 5px,
+      rgba(216, 191, 255, .07) 5px,
+      rgba(216, 191, 255, .07) 7px
+    ),
+    radial-gradient(ellipse at center, #49345f, #171023 78%);
+  border: 1px solid #c7a9e8;
+}
+
+.card-back::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(230, 210, 255, .7);
+  border-radius: 5px;
+}
+
+.card-back::after {
+  content: "✦";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(235, 211, 255, .65);
+  border-radius: 50%;
+  color: #f0d8ff;
+  font-size: clamp(14px, 3vw, 28px);
+  box-shadow: 0 0 15px rgba(193, 154, 255, .2);
+}
+
+/* Chuyển động riêng từng lá */
+
+@keyframes cardDrift {
+  0% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 12px -20px;
+  }
+  100% {
+    translate: -10px 13px;
+  }
+}
+
+@keyframes cardTurn {
+  0%, 100% {
+    rotate: -8deg;
+  }
+  50% {
+    rotate: 8deg;
+  }
+}
+
+/* =========================
+   ĐỐM SÁNG LẤP LÁNH
+========================= */
 
 .card-sparkles {
   position: absolute;
+  z-index: 2;
   inset: 0;
-  z-index: 3;
+  overflow: hidden;
   pointer-events: none;
 }
 
 .sparkle {
   position: absolute;
-  color: #e5c7ff;
-  text-shadow: 0 0 12px #c18cff;
-  animation: sparkleFloat var(--duration, 4s) ease-in-out infinite alternate;
+  left: var(--x);
+  top: var(--y);
+  color: var(--sparkle-color, #e9d6ff);
+  font-size: var(--size, 12px);
+  opacity: 0;
+  text-shadow: 0 0 8px currentColor;
+  animation: sparkleTwinkle var(--duration, 3s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
 }
 
-@keyframes sparkleFloat {
-  from { transform: translateY(8px) rotate(0deg); opacity: .15; }
-  to { transform: translateY(-14px) rotate(90deg); opacity: .9; }
+@keyframes sparkleTwinkle {
+  0%, 100% {
+    opacity: .12;
+    transform: scale(.65) rotate(0deg);
+  }
+  50% {
+    opacity: .95;
+    transform: scale(1.15) rotate(35deg);
+  }
 }
 
-/* Các lá bài */
+/* =========================
+   NỘI DUNG VŨ TRỤ
+========================= */
 
-.flying-cards {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  overflow: hidden;
-  pointer-events: none;
-  transition: opacity .55s ease;
-}
-
-.flying-card {
-  position: absolute;
-  width: clamp(65px, 17vw, 105px);
-  aspect-ratio: 2 / 3;
-  border-radius: 9px;
-  padding: 5px;
-  border: 1px solid rgba(255,255,255,.6);
-  background: linear-gradient(145deg, #f8efff, #c6a7e9 35%, #3c2358);
-  box-shadow: 0 7px 25px rgba(0,0,0,.35), 0 0 18px rgba(180,125,255,.2);
-  pointer-events: auto;
-  cursor: pointer;
-  touch-action: manipulation;
-  user-select: none;
-  -webkit-user-select: none;
-  transition: filter .25s;
-  animation: cardFloat var(--float-time, 6s) ease-in-out infinite alternate;
-}
-
-.flying-card:hover {
-  filter: brightness(1.25);
-}
-
-.card-face {
-  width: 100%;
-  height: 100%;
-  border-radius: 5px;
-  border: 1px solid rgba(63, 36, 83, .35);
+.universe-content {
+  position: relative;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  width: 100%;
+}
+
+.universe-eyebrow {
+  margin-bottom: 22px;
+  color: #c5a9dc;
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.tarot-card {
   position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: min(66vw, 245px);
+  aspect-ratio: 2 / 3.1;
+  padding: 13px;
   overflow: hidden;
+  border: 1px solid rgba(232, 200, 139, .8);
+  border-radius: 115px 115px 8px 8px;
   background:
-    radial-gradient(circle at center, rgba(255,255,255,.55), transparent 55%),
-    linear-gradient(150deg, #e9d7ff, #9b75c5);
-  color: #422751;
-}
-
-.card-face::before {
-  content: "";
-  position: absolute;
-  inset: 5px;
-  border: 1px solid rgba(65, 37, 88, .35);
-  border-radius: 3px;
-}
-
-.card-face .card-mark {
-  font-size: clamp(18px, 5vw, 28px);
-}
-
-.card-face .card-name {
-  font-family: Arial, sans-serif;
-  font-size: 9px;
-  letter-spacing: .08em;
-  margin-top: 5px;
-}
-
-.card-face .corner {
-  position: absolute;
-  font-size: 12px;
-  top: 5px;
-  left: 6px;
-}
-
-.card-face .corner.bottom {
-  top: auto;
-  left: auto;
-  bottom: 5px;
-  right: 6px;
-  transform: rotate(180deg);
+    radial-gradient(ellipse at 50% 40%, rgba(117, 89, 152, .25), transparent 55%),
+    linear-gradient(155deg, #241a35, #100c20);
+  box-shadow:
+    0 0 0 5px rgba(232, 200, 139, .07),
+    0 0 35px rgba(169, 154, 214, .22),
+    0 20px 60px rgba(0, 0, 0, .4);
+  animation: cardFloat 5s ease-in-out infinite;
 }
 
 @keyframes cardFloat {
-  from { transform: translateY(-7px) rotate(var(--rotation, -8deg)); }
-  to { transform: translateY(12px) rotate(calc(var(--rotation, -8deg) + 7deg)); }
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
 }
 
-#backToPage2 {
+.card-border {
   position: absolute;
-  top: 18px;
-  left: 18px;
-  z-index: 70;
-  padding: 10px 15px;
-  border: 1px solid rgba(220, 190, 255, .35);
-  border-radius: 999px;
-  background: rgba(25, 12, 45, .55);
-  color: #e5d4ff;
-  font-family: Arial, sans-serif;
-  font-size: 13px;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: .25s;
-}
-
-#backToPage2:hover {
-  background: rgba(150, 100, 220, .2);
-  transform: translateX(-3px);
-}
-
-/* =========================
-   TRIỆU HỒI CÁC LÁ BÀI
-========================= */
-
-.summon-effect {
-  position: fixed;
-  z-index: 20;
-  width: 10px;
-  height: 10px;
+  inset: 8px;
+  border: 1px solid rgba(232, 200, 139, .4);
+  border-radius: 108px 108px 4px 4px;
   pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, -50%);
 }
 
-.summon-effect.active { opacity: 1; }
-
-.summon-ring {
-  position: absolute;
-  inset: -30px;
-  border: 1px solid rgba(222, 182, 255, .9);
-  border-radius: 50%;
-  box-shadow: 0 0 25px rgba(173, 106, 255, .5);
-  animation: summonSpin .9s linear infinite;
-}
-
-.summon-ring.second {
-  inset: -55px;
-  border-style: dashed;
-  animation-direction: reverse;
-  animation-duration: 1.3s;
-}
-
-.summon-core {
-  position: absolute;
-  inset: -14px;
-  display: grid;
-  place-items: center;
-  color: white;
-  font-size: 25px;
-  text-shadow: 0 0 18px #d7a4ff;
-  animation: corePulse .6s ease-in-out infinite alternate;
-}
-
-@keyframes summonSpin {
-  to { transform: rotate(360deg) scale(1.15); }
-}
-
-@keyframes corePulse {
-  to { transform: scale(1.5); opacity: .55; }
-}
-
-/* =========================
-   LÁ BÀI VÀ LỜI CHÚC
-========================= */
-
-.card-reveal {
-  position: absolute;
-  inset: 0;
-  z-index: 30;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  perspective: 1200px;
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-}
-
-.card-reveal.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-.reveal-card {
-  width: min(76vw, 340px);
-  height: min(112vw, 490px);
-  max-height: 72vh;
-  padding: 9px;
-  border-radius: 20px;
-  background: linear-gradient(145deg, #f5e7ff, #8f60bb 35%, #251437 70%, #d6b7ff);
-  box-shadow: 0 0 30px rgba(190,135,255,.65), 0 0 100px rgba(134,73,214,.35);
-  transform: translateZ(-700px) scale(.15) rotateY(25deg);
-  opacity: 0;
-}
-
-.card-reveal.show .reveal-card {
-  animation: cardShootIn .85s cubic-bezier(.16,.8,.25,1) forwards;
-}
-
-.reveal-card-inner {
+.card-top-label,
+.card-bottom-label {
   position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.65);
-  border-radius: 14px;
+  z-index: 2;
+  color: var(--gold);
+  font-size: 9px;
+  letter-spacing: 3px;
+}
+
+.card-illustration {
+  position: relative;
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 22px;
-  padding: 27px;
-  text-align: center;
-  color: #fff4ff;
-  background:
-    radial-gradient(ellipse at 50% 40%, rgba(161,107,210,.65), transparent 60%),
-    linear-gradient(160deg, #28163d, #100b20 70%, #352046);
+  width: 100%;
 }
 
-.reveal-card-inner::before {
+.card-moon {
+  position: relative;
+  width: 85px;
+  height: 85px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff3d6, #d8bd91 75%);
+  box-shadow: 0 0 35px rgba(232, 200, 139, .22);
+}
+
+.card-moon::after {
   content: "";
   position: absolute;
-  inset: 12px;
-  border: 1px solid rgba(235,208,255,.3);
-  border-radius: 9px;
+  top: -7px;
+  left: 24px;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: #21182f;
 }
 
-.reveal-card-symbol {
-  font-size: 35px;
-  color: #f4d9ff;
-  text-shadow: 0 0 20px #d9a4ff;
+.card-orbit {
+  position: absolute;
+  width: 145px;
+  height: 55px;
+  border: 1px solid rgba(202, 179, 232, .65);
+  border-radius: 50%;
+  transform: rotate(-35deg);
 }
 
-.reveal-card-symbol.bottom { transform: rotate(180deg); }
+.card-star {
+  position: absolute;
+  color: #f4dfae;
+  font-size: 14px;
+}
 
-.reveal-card-wish {
+.card-star.s1 { top: 12%; left: 17%; }
+.card-star.s2 { top: 23%; right: 12%; font-size: 10px; }
+.card-star.s3 { bottom: 18%; left: 14%; font-size: 10px; }
+.card-star.s4 { bottom: 25%; right: 18%; }
+
+.card-caption {
   position: relative;
-  z-index: 1;
-  max-width: 100%;
-  font-size: clamp(16px, 4.3vw, 23px);
-  line-height: 1.8;
-  white-space: pre-line;
-  overflow-wrap: anywhere;
-  text-shadow: 0 0 15px rgba(230,191,255,.25);
+  z-index: 2;
+  margin-top: 5px;
+  color: #ddc8eb;
+  font-size: 11px;
+  font-style: italic;
+  letter-spacing: 1px;
 }
 
-@keyframes cardShootIn {
-  0% { opacity: 0; transform: translateZ(-700px) scale(.15) rotateY(25deg); }
-  65% { opacity: 1; transform: translateZ(60px) scale(1.06) rotateY(-5deg); }
-  100% { opacity: 1; transform: translateZ(0) scale(1) rotateY(0); }
+.universe-title {
+  margin: 28px 0 14px;
+  font-size: clamp(25px, 7vw, 34px);
+  font-weight: normal;
+  line-height: 1.35;
 }
 
-.card-reveal.slide-away .reveal-card {
-  animation: cardSlideDown 1.15s cubic-bezier(.65,0,.8,.25) forwards;
+.universe-message {
+  max-width: 310px;
+  margin: 0;
+  color: #d4c7e1;
+  font-size: 14px;
+  line-height: 1.9;
 }
 
-@keyframes cardSlideDown {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  60% { opacity: 1; transform: translateY(45vh) scale(.95) rotate(4deg); }
-  100% { opacity: 0; transform: translateY(115vh) scale(.8) rotate(9deg); }
+.universe-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.universe .action {
+  border-color: rgba(232, 200, 139, .65);
+  color: #f3dfba;
+}
+
+.universe .action:hover {
+  background: #e8c88b;
+  color: #171126;
 }
 
 /* =========================
-   THẾ GIỚI BĂNG TUYẾT
+   HIỆU ỨNG XÉ ĐÔI TRANG GIẤY
 ========================= */
 
-.ice-world {
+.paper-tear {
   position: absolute;
   inset: 0;
-  z-index: 25;
-  overflow: hidden;
-  opacity: 0;
+  z-index: 8;
   visibility: hidden;
+  opacity: 0;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse at 50% 30%, rgba(213,242,255,.65), transparent 38%),
-    linear-gradient(to bottom, #101b3a 0%, #4b7598 48%, #c5e4f0 82%, #effaff 100%);
-  transition: opacity 1.4s ease, visibility 1.4s;
-}
-
-.ice-world.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-.ice-moon {
-  position: absolute;
-  top: 12%;
-  right: 16%;
-  width: clamp(50px, 10vw, 100px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: #effaff;
-  box-shadow: 0 0 25px rgba(222,246,255,.8), 0 0 90px rgba(173,223,255,.55);
-}
-
-.ice-mountains {
-  position: absolute;
-  left: -10%;
-  right: -10%;
-  bottom: 18%;
-  height: 48%;
-  background: linear-gradient(145deg, #e5f7ff, #8bbbd3 55%, #446e91);
-  clip-path: polygon(0 100%,0 65%,12% 30%,20% 57%,36% 5%,48% 53%,60% 17%,74% 60%,87% 28%,100% 62%,100% 100%);
-  filter: drop-shadow(0 -8px 20px rgba(218,244,255,.3));
-}
-
-.ice-ground {
-  position: absolute;
-  left: -10%;
-  right: -10%;
-  bottom: -8%;
-  height: 37%;
-  border-radius: 50% 50% 0 0;
-  background: linear-gradient(to bottom, #e9f9ff, #b9dfef);
-  box-shadow: 0 -15px 60px rgba(221,245,255,.35);
-}
-
-.ice-snow {
-  position: absolute;
-  inset: 0;
   overflow: hidden;
 }
 
-.ice-snow span {
+.paper-tear.tearing {
+  visibility: visible;
+  opacity: 1;
+}
+
+.paper-half {
   position: absolute;
-  top: -15px;
-  border-radius: 50%;
-  background: white;
-  box-shadow: 0 0 7px rgba(255,255,255,.9);
-  animation: snowFall linear infinite;
+  top: 0;
+  bottom: 0;
+  width: 51%;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 31px,
+      rgba(133, 100, 66, .10) 32px
+    ),
+    radial-gradient(ellipse at 20% 10%, #fff9e9, transparent 60%),
+    var(--paper);
+  box-shadow: 0 0 24px rgba(45, 29, 20, .18);
+  transition:
+    transform 1.05s cubic-bezier(.65, 0, .35, 1),
+    opacity 1.05s ease;
+  will-change: transform, opacity;
 }
 
-@keyframes snowFall {
-  from { transform: translate3d(0,-5vh,0); }
-  to { transform: translate3d(35px,110vh,0); }
+.paper-half-left {
+  left: 0;
+  clip-path: polygon(
+    0 0, 100% 0,
+    96% 5%, 100% 11%,
+    96% 17%, 99% 23%,
+    95% 29%, 100% 35%,
+    96% 42%, 99% 48%,
+    95% 54%, 100% 61%,
+    96% 68%, 99% 75%,
+    95% 82%, 100% 89%,
+    96% 95%, 100% 100%,
+    0 100%
+  );
+  transform-origin: right center;
 }
 
-@media (max-width: 600px) {
-  #backToPage2 {
-    top: 14px;
-    left: 14px;
-    font-size: 12px;
-    padding: 9px 13px;
+.paper-half-right {
+  right: 0;
+  clip-path: polygon(
+    0 0, 100% 0,
+    100% 100%, 0 100%,
+    4% 95%, 0 89%,
+    4% 82%, 1% 75%,
+    5% 68%, 0 61%,
+    4% 54%, 1% 48%,
+    5% 42%, 0 35%,
+    4% 29%, 1% 23%,
+    4% 17%, 0 11%,
+    4% 5%
+  );
+  transform-origin: left center;
+}
+
+.tear-line {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 3px;
+  height: 0;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    #fffdf5 12%,
+    #b99a6b 50%,
+    #fffdf5 88%,
+    transparent
+  );
+  filter: drop-shadow(0 0 5px #fff3d0);
+  transition: height .42s ease;
+}
+
+.paper-tear.tearing .tear-line {
+  height: 100%;
+}
+
+.paper-tear.torn .paper-half-left {
+  transform: translateX(-110%) rotate(-8deg);
+  opacity: 0;
+}
+
+.paper-tear.torn .paper-half-right {
+  transform: translateX(110%) rotate(8deg);
+  opacity: 0;
+}
+
+.paper-tear.torn .tear-line {
+  opacity: 0;
+}
+
+.paper-page.ripping {
+  animation: paperShake .4s ease-in-out;
+}
+
+@keyframes paperShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-3px) rotate(-.2deg); }
+  40% { transform: translateX(3px) rotate(.2deg); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 480px) {
+  .corner {
+    width: 70px;
+    height: 70px;
   }
 
-  .paper { min-height: 72vh; }
+  .cover-content { inset: 24px; }
+
+  .cover-small-title {
+    font-size: 8px;
+    letter-spacing: 3px;
+  }
+
+  .cover-title {
+    font-size: clamp(19px, 5.7vw, 27px);
+  }
+
+  .cover-subtitle { font-size: 10px; }
+
+  .paper-page {
+    padding-right: 20px;
+    padding-left: 40px;
+  }
+
+  .paper-text {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .paper-text p { margin-bottom: 12px; }
+
+  .paper-title { margin-bottom: 20px; }
+
+  .page-controls {
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  .action {
+    padding: 11px 16px;
+    font-size: 11px;
+  }
+
+  .tarot-card { width: min(58vw, 220px); }
+
+  .card-moon {
+    width: 72px;
+    height: 72px;
+  }
+
+  .card-moon::after {
+    width: 70px;
+    height: 70px;
+    left: 20px;
+  }
+
+  .card-orbit {
+    width: 125px;
+    height: 48px;
+  }
+
+  .universe-title {
+    margin-top: 23px;
+    font-size: 27px;
+  }
+
+  .flying-card {
+    opacity: .55;
+  }
+}
+
+@media (max-height: 700px) {
+  .paper-page { justify-content: flex-start; }
+  .paper-content { margin: auto; }
+  .universe { justify-content: flex-start; }
+  .universe-content { margin: auto; }
+
+  .tarot-card { width: min(43vh, 190px); }
+
+  .universe-title {
+    margin-top: 18px;
+    margin-bottom: 10px;
+  }
+
+  .universe-message { font-size: 13px; }
+  .universe-controls { margin-top: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .star, .sparkle, .flying-card, .summon-ring,
-  .summon-core, .ice-snow span {
-    animation-duration: 8s;
+  .paper-half,
+  .tear-line,
+  .paper-page.ripping,
+  .flying-card,
+  .sparkle,
+  .cosmic-glow,
+  .star-field,
+  .shooting-star,
+  .tarot-card {
+    animation: none !important;
+    transition-duration: .01ms !important;
   }
 }
 </style>
 </head>
 
 <body>
+<main class="scene" id="scene">
 
-<!-- =========================
-     TRANG 1: BÌA SỔ
-========================= -->
+  <!-- TRANG 1: LỜI NÓI ĐẦU -->
+  <section class="paper-page active" id="page1">
+    <div class="paper-content">
+      <div class="eyebrow">Lời nói đầu</div>
 
-<section class="page active" id="page1">
-  <div class="paper">
-    <div class="eyebrow">A little notebook</div>
-    <h1>Một cuốn sổ nhỏ</h1>
-    <p>Đôi khi, những điều nhỏ bé nhất lại cất giữ những điều đáng nhớ nhất.</p>
-    <div class="small-note">Lật mở để khám phá · 20/10</div>
-  </div>
+      <h2 class="paper-title">Gửi bạn,</h2>
 
-  <div class="cover" id="cover">
-    <div class="eyebrow">Một món quà nhỏ</div>
-    <h1>The Little<br>Notebook</h1>
-    <p>20 · 10 · Một điều muốn gửi</p>
-    <button id="openCover">Mở cuốn sổ ✦</button>
-  </div>
-</section>
+      <div class="paper-text">
+        <p>
+          Có một vài điều mà tui muốn gửi đến bạn,
+          nên đã quyết định cất chúng vào quyển vở nhỏ này.
+        </p>
 
-<!-- =========================
-     TRANG 2: TÂM TÌNH
-========================= -->
+        <p>
+          Mong rằng khi mở từng trang giấy,
+          bạn sẽ tìm thấy một chút bất ngờ và niềm vui.
+        </p>
 
-<section class="page" id="page2">
-  <div class="paper">
-    <div class="eyebrow">Trang thứ hai</div>
-    <h1>Một chút tâm tình</h1>
-    <p>
-      Có những điều không cần phải thật lớn lao mới trở nên đặc biệt.
-      Đôi khi, chỉ một lời chúc nhỏ cũng đủ khiến một ngày bình thường
-      trở nên đáng nhớ hơn một chút.
-    </p>
-    <p>
-      Và phía sau trang giấy này, có một nơi đang chờ được khám phá.
-    </p>
-    <button class="action-button" id="exploreUniverse">
-      Khám phá vũ trụ ✦
-    </button>
-  </div>
-</section>
+        <p class="signature">
+          Thân gửi,<br>
+          <span>— Người viết quyển vở này —</span>
+        </p>
+      </div>
 
-<!-- =========================
-     TRANG 3: VŨ TRỤ LÁ BÀI
-========================= -->
+      <div class="paper-decoration">✧ · ☾ · ✧</div>
 
-<section class="universe" id="universe">
-
-  <div class="cosmic-background" aria-hidden="true">
-    <div class="cosmic-glow"></div>
-    <div class="cosmic-glow secondary"></div>
-  </div>
-
-  <div class="star-field" id="starField" aria-hidden="true"></div>
-
-  <div class="card-sparkles" id="cardSparkles" aria-hidden="true"></div>
-
-  <div class="flying-cards" id="flying-cards"></div>
-
-  <div class="shooting-star one"></div>
-  <div class="shooting-star two"></div>
-
-  <button id="backToPage2">← Trở về trang 2</button>
-
-  <!-- Hiệu ứng triệu hồi bài -->
-  <div class="summon-effect" id="summonEffect" aria-hidden="true">
-    <div class="summon-ring"></div>
-    <div class="summon-ring second"></div>
-    <div class="summon-core">✦</div>
-  </div>
-
-  <!-- Lá bài phóng lớn -->
-  <div class="card-reveal" id="cardReveal" aria-hidden="true">
-    <div class="reveal-card" id="revealCard">
-      <div class="reveal-card-inner">
-        <div class="reveal-card-symbol">✦</div>
-        <div class="reveal-card-wish" id="revealWish"></div>
-        <div class="reveal-card-symbol bottom">✦</div>
+      <div class="page-controls">
+        <button class="action" id="toPage2" type="button">
+          Lật sang trang tiếp theo →
+        </button>
       </div>
     </div>
+
+    <span class="page-number">01</span>
+  </section>
+
+  <!-- TRANG 2 -->
+  <section class="paper-page" id="page2">
+    <div class="paper-content">
+      <div class="eyebrow">Một trang khác</div>
+
+      <h2 class="paper-title">Một chút tâm tình</h2>
+
+      <div class="paper-text">
+        <p>
+          Có những điều bình thường khi nói ra
+          lại trở nên đặc biệt khi được viết thành lời.
+        </p>
+
+        <p>
+          Vậy nên, trước khi bước sang một thế giới khác,
+          hãy dành một chút thời gian cho trang giấy này.
+        </p>
+
+        <p class="signature">
+          Và bây giờ...<br>
+          <span>một điều bất ngờ đang chờ phía trước.</span>
+        </p>
+      </div>
+
+      <div class="paper-decoration">✦ · ✧ · ✦</div>
+
+      <div class="page-controls">
+        <button class="action" id="backToPage1" type="button">
+          ← Trang trước
+        </button>
+
+        <button class="action" id="toUniverse" type="button">
+          Khám phá vũ trụ ✦
+        </button>
+      </div>
+    </div>
+
+    <span class="page-number">02</span>
+  </section>
+
+  <!-- VŨ TRỤ LÁ BÀI -->
+  <section class="universe" id="universe">
+
+    <!-- Nền ánh sáng tím -->
+    <div class="cosmic-background" aria-hidden="true">
+      <div class="cosmic-glow"></div>
+      <div class="cosmic-glow secondary"></div>
+    </div>
+
+    <!-- Sao nền -->
+    <div class="star-field" aria-hidden="true"></div>
+
+    <!-- Sao lấp lánh được tạo bằng JavaScript -->
+    <div
+      class="card-sparkles"
+      id="card-sparkles"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Các lá bài lơ lửng được tạo bằng JavaScript -->
+    <div
+      class="flying-cards"
+      id="flying-cards"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Sao băng -->
+    <div class="shooting-star one"></div>
+    <div class="shooting-star two"></div>
+
+    <!-- Nội dung chính -->
+    <div class="universe-content">
+      <div class="universe-eyebrow">
+        Somewhere in the universe
+      </div>
+
+      <!-- Lá tarot ở giữa -->
+      <div class="tarot-card">
+        <div class="card-border"></div>
+        <div class="card-top-label">XVII · THE STAR</div>
+
+        <div class="card-illustration">
+          <span class="card-star s1">✦</span>
+          <span class="card-star s2">✧</span>
+          <span class="card-star s3">✧</span>
+          <span class="card-star s4">✦</span>
+
+          <div class="card-moon"></div>
+          <div class="card-orbit"></div>
+
+          <div class="card-caption">
+            written in the stars
+          </div>
+        </div>
+
+        <div class="card-bottom-label">A LITTLE WISH</div>
+      </div>
+
+      <h2 class="universe-title">Giữa muôn vàn vì sao</h2>
+
+      <p class="universe-message">
+        Giữa một vũ trụ rộng lớn đến nhường ấy,
+        mong bạn vẫn tìm thấy ánh sáng của riêng mình.
+        <br><br>
+        Có thể ngày mai chưa biết trước điều gì,
+        nhưng hy vọng những điều tốt đẹp
+        sẽ luôn tìm được đường đến bên bạn.
+      </p>
+
+      <div class="universe-controls">
+        <button class="action" id="backToPage2" type="button">
+          ← Quay lại trang giấy
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HIỆU ỨNG XÉ GIẤY -->
+  <div class="paper-tear" id="paperTear" aria-hidden="true">
+    <div class="paper-half paper-half-left"></div>
+    <div class="paper-half paper-half-right"></div>
+    <div class="tear-line"></div>
   </div>
 
-  <!-- Phong cảnh băng tuyết -->
-  <div class="ice-world" id="iceWorld" aria-hidden="true">
-    <div class="ice-moon"></div>
-    <div class="ice-mountains"></div>
-    <div class="ice-ground"></div>
-    <div class="ice-snow" id="iceSnow"></div>
-  </div>
+  <!-- BÌA VỞ -->
+  <section class="cover" id="cover">
+    <div class="cover-content">
 
-</section>
+      <div class="corner top-left" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <path d="M5 58 Q5 5 58 5"/>
+          <path d="M5 38 Q5 5 38 5"/>
+          <path d="M16 58 Q16 16 58 16"/>
+          <path d="M5 25 L5 5 L25 5"/>
+          <path d="M20 40 Q32 26 44 40 Q32 54 20 40Z"/>
+          <line x1="32" y1="28" x2="32" y2="52"/>
+        </svg>
+        <span class="corner-star one">✦</span>
+        <span class="corner-star two">✧</span>
+      </div>
+
+      <div class="corner top-right" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <path d="M5 58 Q5 5 58 5"/>
+          <path d="M5 38 Q5 5 38 5"/>
+          <path d="M16 58 Q16 16 58 16"/>
+          <path d="M5 25 L5 5 L25 5"/>
+          <path d="M20 40 Q32 26 44 40 Q32 54 20 40Z"/>
+          <line x1="32" y1="28" x2="32" y2="52"/>
+        </svg>
+        <span class="corner-star one">✦</span>
+        <span class="corner-star two">✧</span>
+      </div>
+
+      <div class="corner bottom-left" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <path d="M5 58 Q5 5 58 5"/>
+          <path d="M5 38 Q5 5 38 5"/>
+          <path d="M16 58 Q16 16 58 16"/>
+          <path d="M5 25 L5 5 L25 5"/>
+          <path d="M20 40 Q32 26 44 40 Q32 54 20 40Z"/>
+          <line x1="32" y1="28" x2="32" y2="52"/>
+        </svg>
+        <span class="corner-star one">✦</span>
+        <span class="corner-star two">✧</span>
+      </div>
+
+      <div class="corner bottom-right" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <path d="M5 58 Q5 5 58 5"/>
+          <path d="M5 38 Q5 5 38 5"/>
+          <path d="M16 58 Q16 16 58 16"/>
+          <path d="M5 25 L5 5 L25 5"/>
+          <path d="M20 40 Q32 26 44 40 Q32 54 20 40Z"/>
+          <line x1="32" y1="28" x2="32" y2="52"/>
+        </svg>
+        <span class="corner-star one">✦</span>
+        <span class="corner-star two">✧</span>
+      </div>
+
+      <div class="cover-title-wrap">
+        <div class="cover-small-title">
+          A collection of little things
+        </div>
+        <h1 class="cover-title">The Little Notebook</h1>
+        <div class="cover-subtitle">
+          — a little world of our own —
+        </div>
+      </div>
+
+      <div class="cover-footer">
+        OPEN IT WHEN YOU ARE READY
+      </div>
+    </div>
+
+    <div class="open-hint">
+      ✧ &nbsp; Một điều nhỏ đang chờ bạn &nbsp; ✧
+    </div>
+
+    <div class="cover-button">
+      <button class="action" id="openNotebook" type="button">
+        Mở quyển vở →
+      </button>
+    </div>
+  </section>
+
+</main>
 
 <script>
-/* =========================
-   ĐIỀU HƯỚNG SỔ TAY
-========================= */
-
+const scene = document.getElementById("scene");
 const page1 = document.getElementById("page1");
 const page2 = document.getElementById("page2");
-const cover = document.getElementById("cover");
 const universe = document.getElementById("universe");
+const paperTear = document.getElementById("paperTear");
 
-const openCover = document.getElementById("openCover");
-const exploreUniverse = document.getElementById("exploreUniverse");
+const openNotebook = document.getElementById("openNotebook");
+const toPage2 = document.getElementById("toPage2");
+const backToPage1 = document.getElementById("backToPage1");
+const toUniverse = document.getElementById("toUniverse");
 const backToPage2 = document.getElementById("backToPage2");
 
 let currentPage = 1;
-let pageBusy = false;
-let universeStarted = false;
+let busy = false;
+let transitionTimers = [];
 
-function later(callback, delay) {
-  return setTimeout(callback, delay);
+function clearTransitionTimers() {
+  transitionTimers.forEach(window.clearTimeout);
+  transitionTimers = [];
 }
 
-openCover.addEventListener("click", () => {
-  if (pageBusy) return;
-  pageBusy = true;
+function later(callback, delay) {
+  const timer = window.setTimeout(callback, delay);
+  transitionTimers.push(timer);
+}
 
-  cover.classList.add("open");
+/* =========================
+   TẠO LÁ BÀI LƠ LỬNG
+========================= */
+
+const flyingCards = document.getElementById("flying-cards");
+const sparkleContainer = document.getElementById("card-sparkles");
+
+/*
+  Mỗi loại bài có cách hiển thị riêng:
+  - Poker: các lá bài Tây
+  - Ma Sói: bài nền tím đen
+  - UNO: bài đỏ đặc trưng
+  - Back: mặt sau trang trí
+*/
+
+const cardDeck = [
+  { type: "poker", rank: "A", suit: "♠", color: "black" },
+  { type: "poker", rank: "K", suit: "♥", color: "red" },
+  { type: "poker", rank: "Q", suit: "♦", color: "red" },
+  { type: "poker", rank: "J", suit: "♣", color: "black" },
+  { type: "poker", rank: "7", suit: "♥", color: "red" },
+  { type: "poker", rank: "A", suit: "♦", color: "red" },
+  { type: "poker", rank: "9", suit: "♠", color: "black" },
+  { type: "poker", rank: "K", suit: "♣", color: "black" },
+  { type: "werewolf", label: "THE WOLF" },
+  { type: "werewolf", label: "MOONLIGHT" },
+  { type: "werewolf", label: "NIGHT" },
+  { type: "uno", symbol: "UNO" },
+  { type: "uno", symbol: "↻" },
+  { type: "uno", symbol: "+4" },
+  { type: "uno", symbol: "7" },
+  { type: "back" }
+];
+
+function createCardFace(card) {
+  const face = document.createElement("div");
+
+  if (card.type === "poker") {
+    const colorClass = card.color === "red" ? "card-red" : "card-black";
+
+    face.className = `card-face poker-card ${colorClass}`;
+
+    face.innerHTML = `
+      <div class="card-corner">
+        <span>${card.rank}</span>
+        <span>${card.suit}</span>
+      </div>
+
+      <div class="card-symbol">${card.suit}</div>
+
+      <div class="card-corner bottom">
+        <span>${card.rank}</span>
+        <span>${card.suit}</span>
+      </div>
+    `;
+
+    return face;
+  }
+
+  if (card.type === "werewolf") {
+    face.className = "card-face werewolf-card";
+
+    face.innerHTML = `
+      <div class="werewolf-art">
+        <div class="werewolf-moon"></div>
+        <div class="werewolf-emoji">🐺</div>
+      </div>
+
+      <div class="werewolf-label">${card.label}</div>
+    `;
+
+    return face;
+  }
+
+  if (card.type === "uno") {
+    face.className = "card-face uno-card";
+
+    face.innerHTML = `
+      <div class="uno-corner">${card.symbol}</div>
+      <div class="uno-symbol">${card.symbol}</div>
+      <div class="uno-corner bottom">${card.symbol}</div>
+    `;
+
+    return face;
+  }
+
+  face.className = "card-face card-back";
+  return face;
+}
+
+function createFlyingCard(index) {
+  const card = cardDeck[index % cardDeck.length];
+  const wrapper = document.createElement("div");
+
+  wrapper.className = "flying-card";
+  wrapper.appendChild(createCardFace(card));
+
+  /*
+    Rải bài ở nhiều vị trí khác nhau.
+    Chừa khu vực trung tâm tương đối thoáng để
+    các lá bài không che mất lá tarot chính.
+  */
+
+  const left = Math.random() * 94;
+  const top = Math.random() * 90 + 3;
+  const width = 34 + Math.random() * 28;
+  const duration = 9 + Math.random() * 12;
+  const turnDuration = 13 + Math.random() * 13;
+  const delay = -(Math.random() * 18);
+  const opacity = 0.38 + Math.random() * 0.38;
+
+  wrapper.style.setProperty("--x", `${left}%`);
+  wrapper.style.setProperty("--y", `${top}%`);
+  wrapper.style.setProperty("--w", `${width}px`);
+  wrapper.style.setProperty("--duration", `${duration}s`);
+  wrapper.style.setProperty("--turn-duration", `${turnDuration}s`);
+  wrapper.style.setProperty("--delay", `${delay}s`);
+  wrapper.style.setProperty("--opacity", opacity);
+
+  /*
+    Một số lá ở xa trung tâm được thu nhỏ và làm mờ
+    để tạo cảm giác có chiều sâu.
+  */
+
+  const distanceFromCenter = Math.abs(left - 50);
+
+  if (distanceFromCenter < 18 && top > 25 && top < 72) {
+    wrapper.style.setProperty("--opacity", opacity * 0.45);
+    wrapper.style.filter = "blur(.4px)";
+  }
+
+  flyingCards.appendChild(wrapper);
+}
+
+/* Tạo 26 lá bài */
+
+for (let i = 0; i < 26; i++) {
+  createFlyingCard(i);
+}
+
+/* =========================
+   TẠO SAO LẤP LÁNH
+========================= */
+
+const sparkleSymbols = ["✦", "✧", "·", "⋆", "✶"];
+const sparkleColors = [
+  "#e9d6ff",
+  "#c8b4f3",
+  "#f3dfba",
+  "#ffffff"
+];
+
+for (let i = 0; i < 36; i++) {
+  const sparkle = document.createElement("span");
+
+  sparkle.className = "sparkle";
+  sparkle.textContent =
+    sparkleSymbols[Math.floor(Math.random() * sparkleSymbols.length)];
+
+  sparkle.style.setProperty("--x", `${Math.random() * 98}%`);
+  sparkle.style.setProperty("--y", `${Math.random() * 98}%`);
+  sparkle.style.setProperty("--size", `${7 + Math.random() * 11}px`);
+  sparkle.style.setProperty("--duration", `${2 + Math.random() * 4}s`);
+  sparkle.style.setProperty("--delay", `${-Math.random() * 6}s`);
+  sparkle.style.setProperty(
+    "--sparkle-color",
+    sparkleColors[Math.floor(Math.random() * sparkleColors.length)]
+  );
+
+  sparkleContainer.appendChild(sparkle);
+}
+
+/* =========================
+   CHUYỂN TRANG
+========================= */
+
+function switchPage(from, to, pageNumber) {
+  if (busy) return;
+  busy = true;
+
+  from.classList.add("leaving");
+  to.classList.add("active");
 
   later(() => {
-    page1.classList.remove("active");
-    page2.classList.add("active");
-    currentPage = 2;
-    pageBusy = false;
-  }, 850);
+    from.classList.remove("active", "leaving");
+    currentPage = pageNumber;
+    busy = false;
+  }, 650);
+}
+
+// Mở bìa vở
+openNotebook.addEventListener("click", () => {
+  if (busy) return;
+  busy = true;
+
+  scene.classList.add("cover-open");
+
+  later(() => {
+    scene.classList.add("cover-hidden");
+    busy = false;
+  }, 1450);
 });
 
-exploreUniverse.addEventListener("click", () => {
-  if (pageBusy || currentPage !== 2) return;
-  pageBusy = true;
+// Trang 1 → Trang 2
+toPage2.addEventListener("click", () => {
+  switchPage(page1, page2, 2);
+});
 
-  page2.classList.add("leaving", "ripping");
+// Trang 2 → Trang 1
+backToPage1.addEventListener("click", () => {
+  switchPage(page2, page1, 1);
+});
 
+// Trang 2 → Vũ trụ: xé trang giấy làm đôi
+toUniverse.addEventListener("click", () => {
+  if (busy) return;
+  busy = true;
+
+  clearTransitionTimers();
+
+  // Đặt lại trạng thái để có thể chạy lại hiệu ứng nhiều lần
+  paperTear.classList.remove("torn");
+  paperTear.classList.add("tearing");
+  page2.classList.add("ripping");
+
+  // Đường rách chạy xuống, sau đó hai nửa giấy tách ra
+  later(() => {
+    paperTear.classList.add("torn");
+  }, 420);
+
+  // Cho vũ trụ hiện ra phía sau lớp giấy đang tách
+  later(() => {
+    universe.classList.add("active");
+  }, 520);
+
+  // Kết thúc: bỏ trang giấy cũ khỏi màn hình
   later(() => {
     page2.classList.remove("active", "leaving", "ripping");
-    universe.classList.add("active");
-    currentPage = 3;
-    pageBusy = false;
-
-    if (!universeStarted) {
-      createCosmos();
-      createFlyingCards();
-      universeStarted = true;
-    }
-  }, 650);
+    paperTear.classList.remove("tearing", "torn");
+    currentPage = "universe";
+    busy = false;
+  }, 1550);
 });
 
+// Vũ trụ → Trang 2
 backToPage2.addEventListener("click", () => {
-  if (pageBusy || magicBusy) return;
-  pageBusy = true;
+  if (busy) return;
+  busy = true;
 
   universe.classList.remove("active");
 
@@ -843,1178 +1736,1706 @@ backToPage2.addEventListener("click", () => {
     page2.classList.remove("leaving", "ripping");
     page2.classList.add("active");
     currentPage = 2;
-    pageBusy = false;
+    busy = false;
   }, 650);
 });
-
-/* =========================
-   TẠO SAO VÀ ÁNH SÁNG
-========================= */
-
-const starField = document.getElementById("starField");
-const cardSparkles = document.getElementById("cardSparkles");
-
-function createCosmos() {
-  for (let i = 0; i < 115; i++) {
-    const star = document.createElement("span");
-    star.className = "star";
-
-    const size = Math.random() * 2.2 + .6;
-    star.style.width = size + "px";
-    star.style.height = size + "px";
-    star.style.left = Math.random() * 100 + "%";
-    star.style.top = Math.random() * 100 + "%";
-    star.style.setProperty("--duration", (2 + Math.random() * 4) + "s");
-    star.style.animationDelay = (-Math.random() * 5) + "s";
-
-    starField.appendChild(star);
-  }
-
-  for (let i = 0; i < 28; i++) {
-    const sparkle = document.createElement("span");
-    sparkle.className = "sparkle";
-    sparkle.textContent = Math.random() > .5 ? "✦" : "·";
-    sparkle.style.left = Math.random() * 100 + "%";
-    sparkle.style.top = Math.random() * 100 + "%";
-    sparkle.style.fontSize = (8 + Math.random() * 13) + "px";
-    sparkle.style.setProperty("--duration", (3 + Math.random() * 5) + "s");
-    sparkle.style.animationDelay = (-Math.random() * 5) + "s";
-
-    cardSparkles.appendChild(sparkle);
-  }
-}
-
-/* =========================
-   TẠO CÁC LÁ BÀI BAY
-========================= */
-
-const cardContainer = document.getElementById("flying-cards");
-
-const cardDeck = [
-  { name: "POKER", mark: "♠" },
-  { name: "UNO", mark: "✦" },
-  { name: "WEREWOLF", mark: "☾" },
-  { name: "POKER", mark: "♥" },
-  { name: "UNO", mark: "★" },
-  { name: "WEREWOLF", mark: "✧" },
-  { name: "POKER", mark: "♦" },
-  { name: "UNO", mark: "✦" },
-  { name: "WEREWOLF", mark: "☽" },
-  { name: "POKER", mark: "♣" },
-  { name: "UNO", mark: "✧" },
-  { name: "POKER", mark: "★" }
-];
-
-function createCardFace(cardData) {
-  const face = document.createElement("div");
-  face.className = "card-face";
-
-  const cornerTop = document.createElement("span");
-  cornerTop.className = "corner";
-  cornerTop.textContent = cardData.mark;
-
-  const mark = document.createElement("span");
-  mark.className = "card-mark";
-  mark.textContent = cardData.mark;
-
-  const name = document.createElement("span");
-  name.className = "card-name";
-  name.textContent = cardData.name;
-
-  const cornerBottom = document.createElement("span");
-  cornerBottom.className = "corner bottom";
-  cornerBottom.textContent = cardData.mark;
-
-  face.append(cornerTop, mark, name, cornerBottom);
-  return face;
-}
-
-function createFlyingCards() {
-  cardContainer.innerHTML = "";
-
-  cardDeck.forEach((data, index) => {
-    const card = document.createElement("div");
-    card.className = "flying-card";
-    card.appendChild(createCardFace(data));
-
-    const x = 7 + Math.random() * 79;
-    const y = 12 + Math.random() * 72;
-
-    card.style.left = x + "%";
-    card.style.top = y + "%";
-    card.style.setProperty("--rotation", (-20 + Math.random() * 40) + "deg");
-    card.style.setProperty("--float-time", (4 + Math.random() * 4) + "s");
-    card.style.animationDelay = (-Math.random() * 5) + "s";
-    card.dataset.cardIndex = String(index);
-
-    cardContainer.appendChild(card);
-  });
-}
-
-/* =========================
-   CHỌN BÀI VÀ LỜI CHÚC
-========================= */
-
-const cardReveal = document.getElementById("cardReveal");
-const revealWish = document.getElementById("revealWish");
-const summonEffect = document.getElementById("summonEffect");
-const iceWorld = document.getElementById("iceWorld");
-const iceSnow = document.getElementById("iceSnow");
-
-let magicBusy = false;
-let holdTimer = null;
-let holdTriggered = false;
-let suppressNextClick = false;
-let pointerStartX = 0;
-let pointerStartY = 0;
-
-const HOLD_DURATION = 650;
-
-const sharedWish = `Chúc mọi điều tốt đẹp sẽ tìm đến.
-Mong những ngày vui luôn dài hơn,
-những ngày buồn sẽ ngắn lại,
-và luôn có đủ dũng khí để theo đuổi
-những điều khiến trái tim hạnh phúc.`;
-
-function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function createIceSnow() {
-  if (iceSnow.children.length) return;
-
-  for (let i = 0; i < 65; i++) {
-    const snow = document.createElement("span");
-
-    snow.style.left = Math.random() * 100 + "%";
-    snow.style.animationDuration = (5 + Math.random() * 8) + "s";
-    snow.style.animationDelay = (-Math.random() * 12) + "s";
-    snow.style.opacity = .3 + Math.random() * .7;
-
-    const size = 2 + Math.random() * 3;
-    snow.style.width = size + "px";
-    snow.style.height = size + "px";
-
-    iceSnow.appendChild(snow);
-  }
-}
-
-async function typeMagicWish(text) {
-  revealWish.textContent = "";
-
-  for (const character of text) {
-    revealWish.textContent += character;
-    await wait(35);
-  }
-}
-
-function getRandomMagicCard(cards) {
-  return cards[Math.floor(Math.random() * cards.length)];
-}
-
-async function gatherMagicCards(x, y, cards) {
-  const clones = [];
-
-  cards.forEach((card, index) => {
-    const rect = card.getBoundingClientRect();
-    const clone = card.cloneNode(true);
-
-    clone.style.position = "fixed";
-    clone.style.left = rect.left + "px";
-    clone.style.top = rect.top + "px";
-    clone.style.width = rect.width + "px";
-    clone.style.height = rect.height + "px";
-    clone.style.margin = "0";
-    clone.style.zIndex = "9999";
-    clone.style.pointerEvents = "none";
-    clone.style.animation = "none";
-    clone.style.transition =
-      "transform .85s cubic-bezier(.2,.8,.2,1), opacity .7s ease";
-
-    document.body.appendChild(clone);
-    clones.push(clone);
-
-    const dx = x - (rect.left + rect.width / 2);
-    const dy = y - (rect.top + rect.height / 2);
-
-    requestAnimationFrame(() => {
-      clone.style.transform =
-        `translate(${dx}px,${dy}px) rotate(${720 + index * 90}deg) scale(.08)`;
-      clone.style.opacity = "0";
-    });
-  });
-
-  cardContainer.style.opacity = "0";
-  await wait(900);
-  clones.forEach(clone => clone.remove());
-}
-
-async function revealMagicCard(selectedCard, x, y, isSummon = false) {
-  if (magicBusy || currentPage !== 3) return;
-
-  magicBusy = true;
-
-  const cards = [...cardContainer.querySelectorAll(".flying-card")];
-
-  if (!selectedCard || !cards.length) {
-    magicBusy = false;
-    return;
-  }
-
-  if (isSummon) {
-    summonEffect.style.left = x + "px";
-    summonEffect.style.top = y + "px";
-    summonEffect.classList.add("active");
-
-    await gatherMagicCards(x, y, cards);
-
-    summonEffect.classList.remove("active");
-    await wait(150);
-  } else {
-    cardContainer.style.opacity = "0";
-  }
-
-  revealWish.textContent = "";
-  cardReveal.classList.remove("slide-away");
-  cardReveal.classList.add("show");
-  cardReveal.setAttribute("aria-hidden", "false");
-
-  await wait(900);
-  await typeMagicWish(sharedWish);
-
-  // Để người nhận đọc lời chúc trước khi chuyển cảnh
-  await wait(2600);
-
-  createIceSnow();
-  iceWorld.classList.add("show");
-  iceWorld.setAttribute("aria-hidden", "false");
-
-  await wait(1000);
-
-  cardReveal.classList.add("slide-away");
-
-  await wait(1300);
-
-  // Cảnh băng tuyết giữ nguyên sau khi lá bài rời màn hình
-  magicBusy = false;
-}
-
-// Cách 1: chạm vào lá bài để chọn
-cardContainer.addEventListener("click", (event) => {
-  if (suppressNextClick) {
-    suppressNextClick = false;
-    return;
-  }
-
-  if (magicBusy) return;
-
-  const card = event.target.closest(".flying-card");
-  if (!card) return;
-
-  const rect = card.getBoundingClientRect();
-
-  revealMagicCard(
-    card,
-    rect.left + rect.width / 2,
-    rect.top + rect.height / 2,
-    false
-  );
-});
-
-// Cách 2: nhấn giữ tại bất kỳ điểm nào trên vũ trụ
-universe.addEventListener("pointerdown", (event) => {
-  if (magicBusy || currentPage !== 3) return;
-  if (event.target.closest("#backToPage2")) return;
-
-  // Nếu chạm trực tiếp vào một lá bài thì ưu tiên cách chọn bài.
-  if (event.target.closest(".flying-card")) return;
-
-  const cards = [...cardContainer.querySelectorAll(".flying-card")];
-  if (!cards.length) return;
-
-  holdTriggered = false;
-  pointerStartX = event.clientX;
-  pointerStartY = event.clientY;
-
-  holdTimer = setTimeout(async () => {
-    holdTriggered = true;
-    suppressNextClick = true;
-
-    const selectedCard = getRandomMagicCard(cards);
-
-    await revealMagicCard(
-      selectedCard,
-      pointerStartX,
-      pointerStartY,
-      true
-    );
-  }, HOLD_DURATION);
-});
-
-universe.addEventListener("pointermove", (event) => {
-  if (!holdTimer) return;
-
-  const dx = event.clientX - pointerStartX;
-  const dy = event.clientY - pointerStartY;
-
-  if (Math.hypot(dx, dy) > 18) {
-    clearTimeout(holdTimer);
-    holdTimer = null;
-  }
-});
-
-function stopMagicHold() {
-  if (holdTimer) {
-    clearTimeout(holdTimer);
-    holdTimer = null;
-  }
-}
-
-universe.addEventListener("pointerup", stopMagicHold);
-universe.addEventListener("pointercancel", stopMagicHold);
-universe.addEventListener("pointerleave", stopMagicHold);
 </script>
-
 </body>
 </html>
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#130d20">
-<title>The Little Notebook · Universe</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#171126">
+<title>The Little Notebook</title>
 
 <style>
 :root {
-  --paper: #f6ead7;
-  --ink: #443329;
-  --purple: #261536;
-  --lavender: #dfc0ff;
+  --paper: #f5ead5;
+  --ink: #594333;
+  --muted: #94775c;
+  --night: #100b20;
+  --purple: #a99ad6;
+  --gold: #e8c88b;
 }
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
   margin: 0;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
 }
 
 body {
   overflow: hidden;
-  background: #130d20;
   font-family: Georgia, "Times New Roman", serif;
-  color: var(--ink);
-  -webkit-tap-highlight-color: transparent;
+  background: var(--paper);
 }
 
-button {
-  font: inherit;
+button { font: inherit; }
+
+.scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  perspective: 1400px;
+  isolation: isolate;
+  background: var(--paper);
 }
 
 /* =========================
-   CÁC TRANG SỔ TAY
+   NÚT BẤM
 ========================= */
 
-.page {
-  position: fixed;
-  inset: 0;
-  display: flex;
+.action {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 22px;
-  background:
-    radial-gradient(ellipse at 15% 20%, #fff8e8 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 85%, #e9d4b8 0%, transparent 45%),
-    #f1e2ca;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity .7s ease, visibility .7s ease;
+  gap: 10px;
+  min-height: 45px;
+  padding: 12px 22px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition:
+    background .25s ease,
+    color .25s ease,
+    transform .25s ease;
+}
+
+.action:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.action:active { transform: scale(.97); }
+
+/* =========================
+   TRANG GIẤY
+========================= */
+
+.paper-page {
+  position: absolute;
+  inset: 0;
   z-index: 1;
-}
-
-.page.active {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-.paper {
-  position: relative;
-  width: min(100%, 560px);
-  min-height: min(76vh, 610px);
-  padding: clamp(25px, 7vw, 48px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  text-align: center;
-  border: 1px solid rgba(113, 77, 44, .22);
+  justify-content: center;
+  overflow-y: auto;
+  padding:
+    max(42px, env(safe-area-inset-top))
+    27px
+    max(45px, env(safe-area-inset-bottom))
+    43px;
   background:
     repeating-linear-gradient(
-      0deg,
+      to bottom,
       transparent 0,
       transparent 31px,
-      rgba(123, 93, 65, .06) 32px
+      rgba(133, 100, 66, .10) 32px
     ),
-    rgba(255, 249, 236, .94);
-  box-shadow: 0 22px 65px rgba(59, 36, 20, .2);
+    radial-gradient(ellipse at 20% 10%, #fff9e9, transparent 60%),
+    var(--paper);
+  color: var(--ink);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(25px);
+  transition:
+    opacity .65s ease,
+    transform .65s ease,
+    visibility .65s;
 }
 
-.paper::before {
+.paper-page::before {
   content: "";
   position: absolute;
-  inset: 12px;
-  border: 1px solid rgba(125, 91, 61, .18);
+  top: 0;
+  bottom: 0;
+  left: 28px;
+  width: 1px;
+  background: rgba(167, 93, 79, .34);
   pointer-events: none;
+}
+
+.paper-page.active {
+  z-index: 2;
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.paper-page.leaving {
+  opacity: 0;
+  transform: translateX(-25px);
+  pointer-events: none;
+}
+
+.paper-content {
+  width: 100%;
+  max-width: 410px;
+  margin: auto;
+  text-align: center;
 }
 
 .eyebrow {
-  color: #9b7960;
-  font-family: Arial, sans-serif;
-  text-transform: uppercase;
-  letter-spacing: .22em;
+  margin-bottom: 23px;
+  color: var(--muted);
   font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
 }
 
-.paper h1 {
-  font-size: clamp(30px, 7vw, 46px);
+.paper-title {
+  margin: 0 0 25px;
+  font-size: clamp(27px, 7vw, 37px);
   font-weight: normal;
-  line-height: 1.25;
-  margin: 22px 0;
+  line-height: 1.35;
 }
 
-.paper p {
-  max-width: 390px;
-  font-size: clamp(16px, 4vw, 19px);
-  line-height: 1.9;
+.paper-text {
+  color: #78604b;
+  font-size: clamp(14px, 3.8vw, 17px);
+  line-height: 1.95;
+  text-align: left;
 }
 
-.paper .small-note {
-  color: #927963;
-  font-size: 13px;
-  margin-top: 20px;
+.paper-text p {
+  margin: 0 0 16px;
+  text-indent: 1.5em;
 }
 
-.action-button {
-  margin-top: 28px;
-  padding: 12px 22px;
-  border: 1px solid #8c6b50;
-  color: #553c2d;
-  background: rgba(255, 250, 238, .8);
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background .25s, transform .25s;
+.signature {
+  margin-top: 25px !important;
+  text-align: right;
+  text-indent: 0 !important;
+  font-style: italic;
 }
 
-.action-button:hover {
-  background: #f0dfc5;
-  transform: translateY(-2px);
+.signature span {
+  color: var(--muted);
+  font-size: 12px;
 }
 
-/* Bìa sổ */
+.paper-decoration {
+  margin: 24px 0;
+  color: var(--muted);
+  font-size: 19px;
+  letter-spacing: 9px;
+}
+
+.page-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 27px;
+}
+
+.page-number {
+  position: absolute;
+  right: 25px;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  color: #9c8268;
+  font-size: 11px;
+}
+
+/* =========================
+   BÌA VỞ
+========================= */
 
 .cover {
   position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 10;
+  overflow: hidden;
+  transform-origin: left center;
+  background: radial-gradient(ellipse at center, #fff8e9, #e9d5b5);
+  box-shadow: inset -8px 0 22px rgba(70, 46, 27, .12);
+  transition:
+    transform 1.4s cubic-bezier(.65, 0, .25, 1),
+    opacity .5s ease,
+    visibility .5s;
+}
+
+.cover::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(112, 77, 47, .5);
+  pointer-events: none;
+}
+
+.cover::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(112, 77, 47, .18);
+  pointer-events: none;
+}
+
+.cover-content { position: absolute; inset: 28px; }
+
+.cover-title-wrap {
+  position: absolute;
+  top: 42%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  transform: translateY(-50%);
+}
+
+.cover-small-title {
+  margin-bottom: 18px;
+  color: #8f7254;
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.cover-title {
+  margin: 0;
+  color: #5b4030;
+  font-size: clamp(20px, 6vw, 32px);
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.cover-subtitle {
+  margin-top: 16px;
+  color: #92775e;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.cover-footer {
+  position: absolute;
+  top: 58%;
+  width: 100%;
+  color: #94785e;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.cover-button {
+  position: absolute;
+  right: 0;
+  bottom: max(42px, calc(env(safe-area-inset-bottom) + 28px));
+  left: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.open-hint {
+  position: absolute;
+  right: 0;
+  bottom: max(105px, calc(env(safe-area-inset-bottom) + 92px));
+  left: 0;
+  color: #9a8067;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-align: center;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: .45; }
+  50% { opacity: 1; }
+}
+
+.corner {
+  position: absolute;
+  width: 76px;
+  height: 76px;
+  color: #9d7b55;
+}
+
+.corner svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: .8;
+}
+
+.top-left { top: 12px; left: 12px; }
+.top-right { top: 12px; right: 12px; transform: scaleX(-1); }
+.bottom-left { bottom: 12px; left: 12px; transform: scaleY(-1); }
+.bottom-right { bottom: 12px; right: 12px; transform: scale(-1); }
+
+.corner-star {
+  position: absolute;
+  color: #a4865c;
+  font-size: 12px;
+}
+
+.corner-star.one { top: 15%; left: 20%; }
+.corner-star.two { top: 35%; right: 15%; }
+
+.scene.cover-open .cover {
+  transform: rotateY(-155deg);
+  pointer-events: none;
+}
+
+.scene.cover-hidden .cover {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* =========================
+   VŨ TRỤ TÍM ĐEN
+========================= */
+
+.universe {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 25px;
+  overflow-y: auto;
+  padding:
+    max(35px, env(safe-area-inset-top))
+    22px
+    max(30px, env(safe-area-inset-bottom));
+  color: #f6e9d2;
   text-align: center;
-  color: #f5e5cc;
   background:
-    radial-gradient(ellipse at 50% 35%, #75513e, transparent 65%),
-    linear-gradient(145deg, #4c3029, #211a19);
-  border: 5px double rgba(236, 209, 165, .5);
-  transform-origin: left center;
-  transition: transform 1.2s cubic-bezier(.65, 0, .35, 1);
-  backface-visibility: hidden;
-}
-
-.cover h1 {
-  font-size: clamp(30px, 8vw, 49px);
-  font-weight: normal;
-  line-height: 1.25;
-}
-
-.cover p {
-  color: #d9c1a5;
-  letter-spacing: .08em;
-}
-
-.cover button {
-  margin-top: 24px;
-  padding: 12px 24px;
-  color: #f6e8d0;
-  background: transparent;
-  border: 1px solid rgba(246, 232, 208, .6);
-  cursor: pointer;
-}
-
-.cover.open {
-  transform: perspective(1400px) rotateY(-112deg);
-  pointer-events: none;
-}
-
-.page.leaving {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.page.ripping {
-  animation: paperRip .75s ease forwards;
-}
-
-@keyframes paperRip {
-  0% { clip-path: inset(0); transform: scale(1); }
-  35% { clip-path: polygon(0 0,100% 0,100% 42%,52% 49%,100% 56%,100% 100%,0 100%); }
-  100% { clip-path: polygon(0 0,100% 0,100% 0,50% 0,0 0); transform: scale(1.05); opacity: 0; }
-}
-
-/* =========================
-   VŨ TRỤ
-========================= */
-
-.universe {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  isolation: isolate;
-  background:
-    radial-gradient(ellipse at 50% 48%, #302043 0%, #1a102a 43%, #0c0915 100%);
+    radial-gradient(ellipse at 50% 35%, rgba(99, 64, 135, .30), transparent 48%),
+    radial-gradient(ellipse at 20% 85%, rgba(64, 54, 116, .28), transparent 40%),
+    linear-gradient(155deg, #0c0919, #171027 55%, #251831);
   opacity: 0;
   visibility: hidden;
-  pointer-events: none;
-  transition: opacity 1s ease, visibility 1s ease;
-  z-index: 5;
-  touch-action: pan-y;
+  transform: scale(1.04);
+  transition:
+    opacity 1s ease,
+    transform 1s ease,
+    visibility 1s;
+  isolation: isolate;
 }
 
 .universe.active {
   opacity: 1;
   visibility: visible;
-  pointer-events: auto;
+  transform: scale(1);
 }
+
+/* Các lớp nền nằm sau mọi lá bài */
 
 .cosmic-background {
   position: absolute;
   inset: 0;
+  z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  z-index: 0;
 }
 
 .cosmic-glow {
   position: absolute;
-  width: 75vw;
-  height: 75vw;
-  max-width: 700px;
-  max-height: 700px;
+  width: min(75vw, 650px);
+  aspect-ratio: 1;
+  top: 5%;
+  left: 5%;
   border-radius: 50%;
-  left: -20%;
-  top: 10%;
-  background: rgba(105, 51, 157, .13);
-  filter: blur(75px);
+  background: radial-gradient(
+    circle,
+    rgba(105, 65, 158, .22),
+    rgba(76, 44, 120, .09) 40%,
+    transparent 70%
+  );
+  filter: blur(12px);
+  animation: cosmicFloat 15s ease-in-out infinite alternate;
 }
 
 .cosmic-glow.secondary {
-  left: auto;
-  right: -30%;
   top: 45%;
-  background: rgba(83, 64, 171, .14);
+  left: 50%;
+  width: min(85vw, 750px);
+  background: radial-gradient(
+    circle,
+    rgba(90, 59, 142, .22),
+    rgba(67, 45, 109, .08) 42%,
+    transparent 70%
+  );
+  animation-delay: -7s;
+  animation-duration: 19s;
 }
+
+@keyframes cosmicFloat {
+  0% { transform: translate(-10%, -5%) scale(.9); }
+  50% { transform: translate(15%, 8%) scale(1.12); }
+  100% { transform: translate(-3%, 15%) scale(1); }
+}
+
+/* Sao nền */
 
 .star-field {
   position: absolute;
-  inset: 0;
   z-index: 1;
+  inset: 0;
   pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 82% 17%, #fff 99%, transparent),
+    radial-gradient(2px 2px at 65% 32%, #d8c5ff 99%, transparent),
+    radial-gradient(1px 1px at 25% 46%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 89% 68%, #fff 99%, transparent),
+    radial-gradient(2px 2px at 15% 79%, #d8c5ff 99%, transparent),
+    radial-gradient(1px 1px at 72% 88%, #fff 99%, transparent);
+  background-size: 230px 220px;
+  animation: drift 35s linear infinite;
 }
 
-.star {
-  position: absolute;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 7px rgba(230, 207, 255, .9);
-  animation: twinkle var(--duration, 3s) ease-in-out infinite alternate;
+@keyframes drift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-220px); }
 }
 
-@keyframes twinkle {
-  from { opacity: .2; transform: scale(.65); }
-  to { opacity: 1; transform: scale(1.3); }
-}
+/* Sao băng */
 
 .shooting-star {
   position: absolute;
-  width: 115px;
-  height: 1px;
   z-index: 2;
-  pointer-events: none;
+  width: 75px;
+  height: 1px;
   opacity: 0;
-  background: linear-gradient(90deg, transparent, #fff, #d9b3ff);
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, #f4e6c6);
   transform: rotate(-35deg);
-  filter: drop-shadow(0 0 5px #d3a5ff);
-  animation: shootStar 7s linear infinite;
+  animation: shooting 5s ease-in-out infinite;
+}
+
+.shooting-star::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff4d9;
+  box-shadow: 0 0 10px #fff4d9;
 }
 
 .shooting-star.one {
-  top: 18%;
-  left: -150px;
+  top: 20%;
+  right: 8%;
+  animation-delay: 1s;
 }
 
 .shooting-star.two {
-  top: 42%;
-  left: -150px;
-  animation-delay: 3.5s;
-  animation-duration: 9s;
+  top: 35%;
+  left: 4%;
+  animation-delay: 3s;
 }
 
-@keyframes shootStar {
-  0%, 65% { opacity: 0; transform: translate(0, 0) rotate(-35deg); }
-  68% { opacity: 1; }
-  84% { opacity: .8; transform: translate(125vw, 48vh) rotate(-35deg); }
-  85%, 100% { opacity: 0; }
+@keyframes shooting {
+  0%, 65%, 100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(-35deg);
+  }
+  70% { opacity: 1; }
+  82% {
+    opacity: 0;
+    transform: translate(-55px, 40px) rotate(-35deg);
+  }
 }
+
+/* =========================
+   LÁ BÀI LƠ LỬNG
+========================= */
+
+.flying-cards {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  perspective: 900px;
+}
+
+.flying-card {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: calc(var(--w) * 1.48);
+  opacity: var(--opacity, .72);
+  transform-style: preserve-3d;
+  animation:
+    cardDrift var(--duration, 12s) ease-in-out infinite alternate,
+    cardTurn var(--turn-duration, 17s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: transform;
+}
+
+.card-face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(244, 226, 255, .55);
+  border-radius: 8px;
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, .35),
+    0 0 16px rgba(174, 137, 231, .12);
+  background: #f7f0e8;
+  color: #241b32;
+}
+
+.card-corner {
+  position: absolute;
+  top: 7%;
+  left: 9%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  font-family: Georgia, serif;
+  font-size: clamp(8px, 1.5vw, 14px);
+  font-weight: bold;
+  line-height: 1;
+}
+
+.card-corner.bottom {
+  top: auto;
+  right: 9%;
+  bottom: 7%;
+  left: auto;
+  transform: rotate(180deg);
+}
+
+.card-symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-family: Georgia, serif;
+  font-size: clamp(20px, 4.5vw, 43px);
+}
+
+.card-red { color: #b53b4a; }
+.card-black { color: #292132; }
+
+/* Lá Poker */
+
+.poker-card {
+  background:
+    radial-gradient(ellipse at center, #fffdf8, #e9dfd6);
+}
+
+.poker-card::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(91, 60, 84, .22);
+  border-radius: 5px;
+}
+
+.poker-card .card-symbol {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .08);
+}
+
+/* Lá Ma Sói */
+
+.werewolf-card {
+  background:
+    radial-gradient(ellipse at 50% 40%, #55406f, transparent 65%),
+    linear-gradient(155deg, #2c213c, #120e1f);
+  border-color: rgba(205, 173, 242, .75);
+  color: #eee0ff;
+}
+
+.werewolf-card::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(213, 185, 245, .38);
+  border-radius: 5px;
+}
+
+.werewolf-label {
+  position: absolute;
+  right: 0;
+  bottom: 11%;
+  left: 0;
+  color: #e7d5ff;
+  font-family: Georgia, serif;
+  font-size: clamp(6px, 1.2vw, 11px);
+  letter-spacing: 1.5px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.werewolf-art {
+  position: absolute;
+  inset: 20% 0 24%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.werewolf-moon {
+  width: 32%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff3d2, #bba5db 75%);
+  box-shadow: 0 0 18px rgba(221, 192, 255, .25);
+}
+
+.werewolf-emoji {
+  margin-top: -10%;
+  font-size: clamp(18px, 4vw, 38px);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .4));
+}
+
+/* Lá UNO */
+
+.uno-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e9263f;
+  border: 2px solid #fff3df;
+  border-radius: 13px;
+}
+
+.uno-card::before {
+  content: "";
+  position: absolute;
+  inset: 7%;
+  border: 2px solid rgba(255, 255, 255, .95);
+  border-radius: 50%;
+  background: #f7f0e8;
+  transform: rotate(-28deg) scaleX(.85);
+  box-shadow: inset 0 0 0 3px #e9263f;
+}
+
+.uno-symbol {
+  position: relative;
+  z-index: 1;
+  color: #e9263f;
+  font-family: Arial, sans-serif;
+  font-size: clamp(18px, 4.5vw, 42px);
+  font-weight: 1000;
+  font-style: italic;
+  letter-spacing: -3px;
+  text-shadow: 1px 1px 0 #fff;
+  transform: rotate(-28deg);
+}
+
+.uno-corner {
+  position: absolute;
+  z-index: 2;
+  top: 5%;
+  left: 9%;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: clamp(8px, 1.5vw, 13px);
+  font-weight: bold;
+}
+
+.uno-corner.bottom {
+  top: auto;
+  right: 9%;
+  bottom: 5%;
+  left: auto;
+  transform: rotate(180deg);
+}
+
+/* Mặt sau của bài */
+
+.card-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 5px,
+      rgba(216, 191, 255, .07) 5px,
+      rgba(216, 191, 255, .07) 7px
+    ),
+    radial-gradient(ellipse at center, #49345f, #171023 78%);
+  border: 1px solid #c7a9e8;
+}
+
+.card-back::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(230, 210, 255, .7);
+  border-radius: 5px;
+}
+
+.card-back::after {
+  content: "✦";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(235, 211, 255, .65);
+  border-radius: 50%;
+  color: #f0d8ff;
+  font-size: clamp(14px, 3vw, 28px);
+  box-shadow: 0 0 15px rgba(193, 154, 255, .2);
+}
+
+/* Chuyển động riêng từng lá */
+
+@keyframes cardDrift {
+  0% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 12px -20px;
+  }
+  100% {
+    translate: -10px 13px;
+  }
+}
+
+@keyframes cardTurn {
+  0%, 100% {
+    rotate: -8deg;
+  }
+  50% {
+    rotate: 8deg;
+  }
+}
+
+/* =========================
+   ĐỐM SÁNG LẤP LÁNH
+========================= */
 
 .card-sparkles {
   position: absolute;
+  z-index: 2;
   inset: 0;
-  z-index: 3;
+  overflow: hidden;
   pointer-events: none;
 }
 
 .sparkle {
   position: absolute;
-  color: #e5c7ff;
-  text-shadow: 0 0 12px #c18cff;
-  animation: sparkleFloat var(--duration, 4s) ease-in-out infinite alternate;
+  left: var(--x);
+  top: var(--y);
+  color: var(--sparkle-color, #e9d6ff);
+  font-size: var(--size, 12px);
+  opacity: 0;
+  text-shadow: 0 0 8px currentColor;
+  animation: sparkleTwinkle var(--duration, 3s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
 }
 
-@keyframes sparkleFloat {
-  from { transform: translateY(8px) rotate(0deg); opacity: .15; }
-  to { transform: translateY(-14px) rotate(90deg); opacity: .9; }
+@keyframes sparkleTwinkle {
+  0%, 100% {
+    opacity: .12;
+    transform: scale(.65) rotate(0deg);
+  }
+  50% {
+    opacity: .95;
+    transform: scale(1.15) rotate(35deg);
+  }
 }
 
-/* Các lá bài */
+/* =========================
+   NỘI DUNG VŨ TRỤ
+========================= */
 
-.flying-cards {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  overflow: hidden;
-  pointer-events: none;
-  transition: opacity .55s ease;
-}
-
-.flying-card {
-  position: absolute;
-  width: clamp(65px, 17vw, 105px);
-  aspect-ratio: 2 / 3;
-  border-radius: 9px;
-  padding: 5px;
-  border: 1px solid rgba(255,255,255,.6);
-  background: linear-gradient(145deg, #f8efff, #c6a7e9 35%, #3c2358);
-  box-shadow: 0 7px 25px rgba(0,0,0,.35), 0 0 18px rgba(180,125,255,.2);
-  pointer-events: auto;
-  cursor: pointer;
-  touch-action: manipulation;
-  user-select: none;
-  -webkit-user-select: none;
-  transition: filter .25s;
-  animation: cardFloat var(--float-time, 6s) ease-in-out infinite alternate;
-}
-
-.flying-card:hover {
-  filter: brightness(1.25);
-}
-
-.card-face {
-  width: 100%;
-  height: 100%;
-  border-radius: 5px;
-  border: 1px solid rgba(63, 36, 83, .35);
+.universe-content {
+  position: relative;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  width: 100%;
+}
+
+.universe-eyebrow {
+  margin-bottom: 22px;
+  color: #c5a9dc;
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.tarot-card {
   position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: min(66vw, 245px);
+  aspect-ratio: 2 / 3.1;
+  padding: 13px;
   overflow: hidden;
+  border: 1px solid rgba(232, 200, 139, .8);
+  border-radius: 115px 115px 8px 8px;
   background:
-    radial-gradient(circle at center, rgba(255,255,255,.55), transparent 55%),
-    linear-gradient(150deg, #e9d7ff, #9b75c5);
-  color: #422751;
-}
-
-.card-face::before {
-  content: "";
-  position: absolute;
-  inset: 5px;
-  border: 1px solid rgba(65, 37, 88, .35);
-  border-radius: 3px;
-}
-
-.card-face .card-mark {
-  font-size: clamp(18px, 5vw, 28px);
-}
-
-.card-face .card-name {
-  font-family: Arial, sans-serif;
-  font-size: 9px;
-  letter-spacing: .08em;
-  margin-top: 5px;
-}
-
-.card-face .corner {
-  position: absolute;
-  font-size: 12px;
-  top: 5px;
-  left: 6px;
-}
-
-.card-face .corner.bottom {
-  top: auto;
-  left: auto;
-  bottom: 5px;
-  right: 6px;
-  transform: rotate(180deg);
+    radial-gradient(ellipse at 50% 40%, rgba(117, 89, 152, .25), transparent 55%),
+    linear-gradient(155deg, #241a35, #100c20);
+  box-shadow:
+    0 0 0 5px rgba(232, 200, 139, .07),
+    0 0 35px rgba(169, 154, 214, .22),
+    0 20px 60px rgba(0, 0, 0, .4);
+  animation: cardFloat 5s ease-in-out infinite;
 }
 
 @keyframes cardFloat {
-  from { transform: translateY(-7px) rotate(var(--rotation, -8deg)); }
-  to { transform: translateY(12px) rotate(calc(var(--rotation, -8deg) + 7deg)); }
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
 }
 
-#backToPage2 {
+.card-border {
   position: absolute;
-  top: 18px;
-  left: 18px;
-  z-index: 70;
-  padding: 10px 15px;
-  border: 1px solid rgba(220, 190, 255, .35);
-  border-radius: 999px;
-  background: rgba(25, 12, 45, .55);
-  color: #e5d4ff;
-  font-family: Arial, sans-serif;
-  font-size: 13px;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: .25s;
-}
-
-#backToPage2:hover {
-  background: rgba(150, 100, 220, .2);
-  transform: translateX(-3px);
-}
-
-/* =========================
-   TRIỆU HỒI CÁC LÁ BÀI
-========================= */
-
-.summon-effect {
-  position: fixed;
-  z-index: 20;
-  width: 10px;
-  height: 10px;
+  inset: 8px;
+  border: 1px solid rgba(232, 200, 139, .4);
+  border-radius: 108px 108px 4px 4px;
   pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, -50%);
 }
 
-.summon-effect.active { opacity: 1; }
-
-.summon-ring {
-  position: absolute;
-  inset: -30px;
-  border: 1px solid rgba(222, 182, 255, .9);
-  border-radius: 50%;
-  box-shadow: 0 0 25px rgba(173, 106, 255, .5);
-  animation: summonSpin .9s linear infinite;
-}
-
-.summon-ring.second {
-  inset: -55px;
-  border-style: dashed;
-  animation-direction: reverse;
-  animation-duration: 1.3s;
-}
-
-.summon-core {
-  position: absolute;
-  inset: -14px;
-  display: grid;
-  place-items: center;
-  color: white;
-  font-size: 25px;
-  text-shadow: 0 0 18px #d7a4ff;
-  animation: corePulse .6s ease-in-out infinite alternate;
-}
-
-@keyframes summonSpin {
-  to { transform: rotate(360deg) scale(1.15); }
-}
-
-@keyframes corePulse {
-  to { transform: scale(1.5); opacity: .55; }
-}
-
-/* =========================
-   LÁ BÀI VÀ LỜI CHÚC
-========================= */
-
-.card-reveal {
-  position: absolute;
-  inset: 0;
-  z-index: 30;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  perspective: 1200px;
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-}
-
-.card-reveal.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-.reveal-card {
-  width: min(76vw, 340px);
-  height: min(112vw, 490px);
-  max-height: 72vh;
-  padding: 9px;
-  border-radius: 20px;
-  background: linear-gradient(145deg, #f5e7ff, #8f60bb 35%, #251437 70%, #d6b7ff);
-  box-shadow: 0 0 30px rgba(190,135,255,.65), 0 0 100px rgba(134,73,214,.35);
-  transform: translateZ(-700px) scale(.15) rotateY(25deg);
-  opacity: 0;
-}
-
-.card-reveal.show .reveal-card {
-  animation: cardShootIn .85s cubic-bezier(.16,.8,.25,1) forwards;
-}
-
-.reveal-card-inner {
+.card-top-label,
+.card-bottom-label {
   position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.65);
-  border-radius: 14px;
+  z-index: 2;
+  color: var(--gold);
+  font-size: 9px;
+  letter-spacing: 3px;
+}
+
+.card-illustration {
+  position: relative;
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 22px;
-  padding: 27px;
-  text-align: center;
-  color: #fff4ff;
-  background:
-    radial-gradient(ellipse at 50% 40%, rgba(161,107,210,.65), transparent 60%),
-    linear-gradient(160deg, #28163d, #100b20 70%, #352046);
+  width: 100%;
 }
 
-.reveal-card-inner::before {
+.card-moon {
+  position: relative;
+  width: 85px;
+  height: 85px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff3d6, #d8bd91 75%);
+  box-shadow: 0 0 35px rgba(232, 200, 139, .22);
+}
+
+.card-moon::after {
   content: "";
   position: absolute;
-  inset: 12px;
-  border: 1px solid rgba(235,208,255,.3);
-  border-radius: 9px;
+  top: -7px;
+  left: 24px;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: #21182f;
 }
 
-.reveal-card-symbol {
-  font-size: 35px;
-  color: #f4d9ff;
-  text-shadow: 0 0 20px #d9a4ff;
+.card-orbit {
+  position: absolute;
+  width: 145px;
+  height: 55px;
+  border: 1px solid rgba(202, 179, 232, .65);
+  border-radius: 50%;
+  transform: rotate(-35deg);
 }
 
-.reveal-card-symbol.bottom { transform: rotate(180deg); }
+.card-star {
+  position: absolute;
+  color: #f4dfae;
+  font-size: 14px;
+}
 
-.reveal-card-wish {
+.card-star.s1 { top: 12%; left: 17%; }
+.card-star.s2 { top: 23%; right: 12%; font-size: 10px; }
+.card-star.s3 { bottom: 18%; left: 14%; font-size: 10px; }
+.card-star.s4 { bottom: 25%; right: 18%; }
+
+.card-caption {
   position: relative;
-  z-index: 1;
-  max-width: 100%;
-  font-size: clamp(16px, 4.3vw, 23px);
-  line-height: 1.8;
-  white-space: pre-line;
-  overflow-wrap: anywhere;
-  text-shadow: 0 0 15px rgba(230,191,255,.25);
+  z-index: 2;
+  margin-top: 5px;
+  color: #ddc8eb;
+  font-size: 11px;
+  font-style: italic;
+  letter-spacing: 1px;
 }
 
-@keyframes cardShootIn {
-  0% { opacity: 0; transform: translateZ(-700px) scale(.15) rotateY(25deg); }
-  65% { opacity: 1; transform: translateZ(60px) scale(1.06) rotateY(-5deg); }
-  100% { opacity: 1; transform: translateZ(0) scale(1) rotateY(0); }
+.universe-title {
+  margin: 28px 0 14px;
+  font-size: clamp(25px, 7vw, 34px);
+  font-weight: normal;
+  line-height: 1.35;
 }
 
-.card-reveal.slide-away .reveal-card {
-  animation: cardSlideDown 1.15s cubic-bezier(.65,0,.8,.25) forwards;
+.universe-message {
+  max-width: 310px;
+  margin: 0;
+  color: #d4c7e1;
+  font-size: 14px;
+  line-height: 1.9;
 }
 
-@keyframes cardSlideDown {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  60% { opacity: 1; transform: translateY(45vh) scale(.95) rotate(4deg); }
-  100% { opacity: 0; transform: translateY(115vh) scale(.8) rotate(9deg); }
+.universe-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.universe .action {
+  border-color: rgba(232, 200, 139, .65);
+  color: #f3dfba;
+}
+
+.universe .action:hover {
+  background: #e8c88b;
+  color: #171126;
 }
 
 /* =========================
-   THẾ GIỚI BĂNG TUYẾT
+   HIỆU ỨNG XÉ ĐÔI TRANG GIẤY
 ========================= */
 
-.ice-world {
+.paper-tear {
   position: absolute;
   inset: 0;
-  z-index: 25;
-  overflow: hidden;
-  opacity: 0;
+  z-index: 8;
   visibility: hidden;
+  opacity: 0;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse at 50% 30%, rgba(213,242,255,.65), transparent 38%),
-    linear-gradient(to bottom, #101b3a 0%, #4b7598 48%, #c5e4f0 82%, #effaff 100%);
-  transition: opacity 1.4s ease, visibility 1.4s;
-}
-
-.ice-world.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-.ice-moon {
-  position: absolute;
-  top: 12%;
-  right: 16%;
-  width: clamp(50px, 10vw, 100px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: #effaff;
-  box-shadow: 0 0 25px rgba(222,246,255,.8), 0 0 90px rgba(173,223,255,.55);
-}
-
-.ice-mountains {
-  position: absolute;
-  left: -10%;
-  right: -10%;
-  bottom: 18%;
-  height: 48%;
-  background: linear-gradient(145deg, #e5f7ff, #8bbbd3 55%, #446e91);
-  clip-path: polygon(0 100%,0 65%,12% 30%,20% 57%,36% 5%,48% 53%,60% 17%,74% 60%,87% 28%,100% 62%,100% 100%);
-  filter: drop-shadow(0 -8px 20px rgba(218,244,255,.3));
-}
-
-.ice-ground {
-  position: absolute;
-  left: -10%;
-  right: -10%;
-  bottom: -8%;
-  height: 37%;
-  border-radius: 50% 50% 0 0;
-  background: linear-gradient(to bottom, #e9f9ff, #b9dfef);
-  box-shadow: 0 -15px 60px rgba(221,245,255,.35);
-}
-
-.ice-snow {
-  position: absolute;
-  inset: 0;
   overflow: hidden;
 }
 
-.ice-snow span {
+.paper-tear.tearing {
+  visibility: visible;
+  opacity: 1;
+}
+
+.paper-half {
   position: absolute;
-  top: -15px;
-  border-radius: 50%;
-  background: white;
-  box-shadow: 0 0 7px rgba(255,255,255,.9);
-  animation: snowFall linear infinite;
+  top: 0;
+  bottom: 0;
+  width: 51%;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 31px,
+      rgba(133, 100, 66, .10) 32px
+    ),
+    radial-gradient(ellipse at 20% 10%, #fff9e9, transparent 60%),
+    var(--paper);
+  box-shadow: 0 0 24px rgba(45, 29, 20, .18);
+  transition:
+    transform 1.05s cubic-bezier(.65, 0, .35, 1),
+    opacity 1.05s ease;
+  will-change: transform, opacity;
 }
 
-@keyframes snowFall {
-  from { transform: translate3d(0,-5vh,0); }
-  to { transform: translate3d(35px,110vh,0); }
+.paper-half-left {
+  left: 0;
+  clip-path: polygon(
+    0 0, 100% 0,
+    96% 5%, 100% 11%,
+    96% 17%, 99% 23%,
+    95% 29%, 100% 35%,
+    96% 42%, 99% 48%,
+    95% 54%, 100% 61%,
+    96% 68%, 99% 75%,
+    95% 82%, 100% 89%,
+    96% 95%, 100% 100%,
+    0 100%
+  );
+  transform-origin: right center;
 }
 
-@media (max-width: 600px) {
-  #backToPage2 {
-    top: 14px;
-    left: 14px;
-    font-size: 12px;
-    padding: 9px 13px;
+.paper-half-right {
+  right: 0;
+  clip-path: polygon(
+    0 0, 100% 0,
+    100% 100%, 0 100%,
+    4% 95%, 0 89%,
+    4% 82%, 1% 75%,
+    5% 68%, 0 61%,
+    4% 54%, 1% 48%,
+    5% 42%, 0 35%,
+    4% 29%, 1% 23%,
+    4% 17%, 0 11%,
+    4% 5%
+  );
+  transform-origin: left center;
+}
+
+.tear-line {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 3px;
+  height: 0;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    #fffdf5 12%,
+    #b99a6b 50%,
+    #fffdf5 88%,
+    transparent
+  );
+  filter: drop-shadow(0 0 5px #fff3d0);
+  transition: height .42s ease;
+}
+
+.paper-tear.tearing .tear-line {
+  height: 100%;
+}
+
+.paper-tear.torn .paper-half-left {
+  transform: translateX(-110%) rotate(-8deg);
+  opacity: 0;
+}
+
+.paper-tear.torn .paper-half-right {
+  transform: translateX(110%) rotate(8deg);
+  opacity: 0;
+}
+
+.paper-tear.torn .tear-line {
+  opacity: 0;
+}
+
+.paper-page.ripping {
+  animation: paperShake .4s ease-in-out;
+}
+
+@keyframes paperShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-3px) rotate(-.2deg); }
+  40% { transform: translateX(3px) rotate(.2deg); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 480px) {
+  .corner {
+    width: 70px;
+    height: 70px;
   }
 
-  .paper { min-height: 72vh; }
+  .cover-content { inset: 24px; }
+
+  .cover-small-title {
+    font-size: 8px;
+    letter-spacing: 3px;
+  }
+
+  .cover-title {
+    font-size: clamp(19px, 5.7vw, 27px);
+  }
+
+  .cover-subtitle { font-size: 10px; }
+
+  .paper-page {
+    padding-right: 20px;
+    padding-left: 40px;
+  }
+
+  .paper-text {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .paper-text p { margin-bottom: 12px; }
+
+  .paper-title { margin-bottom: 20px; }
+
+  .page-controls {
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  .action {
+    padding: 11px 16px;
+    font-size: 11px;
+  }
+
+  .tarot-card { width: min(58vw, 220px); }
+
+  .card-moon {
+    width: 72px;
+    height: 72px;
+  }
+
+  .card-moon::after {
+    width: 70px;
+    height: 70px;
+    left: 20px;
+  }
+
+  .card-orbit {
+    width: 125px;
+    height: 48px;
+  }
+
+  .universe-title {
+    margin-top: 23px;
+    font-size: 27px;
+  }
+
+  .flying-card {
+    opacity: .55;
+  }
+}
+
+@media (max-height: 700px) {
+  .paper-page { justify-content: flex-start; }
+  .paper-content { margin: auto; }
+  .universe { justify-content: flex-start; }
+  .universe-content { margin: auto; }
+
+  .tarot-card { width: min(43vh, 190px); }
+
+  .universe-title {
+    margin-top: 18px;
+    margin-bottom: 10px;
+  }
+
+  .universe-message { font-size: 13px; }
+  .universe-controls { margin-top: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .star, .sparkle, .flying-card, .summon-ring,
-  .summon-core, .ice-snow span {
-    animation-duration: 8s;
+  .paper-half,
+  .tear-line,
+  .paper-page.ripping,
+  .flying-card,
+  .sparkle,
+  .cosmic-glow,
+  .star-field,
+  .shooting-star,
+  .tarot-card {
+    animation: none !important;
+    transition-duration: .01ms !important;
   }
 }
 </style>
 </head>
 
 <body>
+<main class="scene" id="scene">
 
-<!-- =========================
-     TRANG 1: BÌA SỔ
-========================= -->
+  <!-- TRANG 1: LỜI NÓI ĐẦU -->
+  <section class="paper-page active" id="page1">
+    <div class="paper-content">
+      <div class="eyebrow">Lời nói đầu</div>
 
-<section class="page active" id="page1">
-  <div class="paper">
-    <div class="eyebrow">A little notebook</div>
-    <h1>Một cuốn sổ nhỏ</h1>
-    <p>Đôi khi, những điều nhỏ bé nhất lại cất giữ những điều đáng nhớ nhất.</p>
-    <div class="small-note">Lật mở để khám phá · 20/10</div>
-  </div>
+      <h2 class="paper-title">Gửi bạn,</h2>
 
-  <div class="cover" id="cover">
-    <div class="eyebrow">Một món quà nhỏ</div>
-    <h1>The Little<br>Notebook</h1>
-    <p>20 · 10 · Một điều muốn gửi</p>
-    <button id="openCover">Mở cuốn sổ ✦</button>
-  </div>
-</section>
+      <div class="paper-text">
+        <p>
+          Có một vài điều mà tui muốn gửi đến bạn,
+          nên đã quyết định cất chúng vào quyển vở nhỏ này.
+        </p>
 
-<!-- =========================
-     TRANG 2: TÂM TÌNH
-========================= -->
+        <p>
+          Mong rằng khi mở từng trang giấy,
+          bạn sẽ tìm thấy một chút bất ngờ và niềm vui.
+        </p>
 
-<section class="page" id="page2">
-  <div class="paper">
-    <div class="eyebrow">Trang thứ hai</div>
-    <h1>Một chút tâm tình</h1>
-    <p>
-      Có những điều không cần phải thật lớn lao mới trở nên đặc biệt.
-      Đôi khi, chỉ một lời chúc nhỏ cũng đủ khiến một ngày bình thường
-      trở nên đáng nhớ hơn một chút.
-    </p>
-    <p>
-      Và phía sau trang giấy này, có một nơi đang chờ được khám phá.
-    </p>
-    <button class="action-button" id="exploreUniverse">
-      Khám phá vũ trụ ✦
-    </button>
-  </div>
-</section>
+        <p class="signature">
+          Thân gửi,<br>
+          <span>— Người viết quyển vở này —</span>
+        </p>
+      </div>
 
-<!-- =========================
-     TRANG 3: VŨ TRỤ LÁ BÀI
-========================= -->
+      <div class="paper-decoration">✧ · ☾ · ✧</div>
 
-<section class="universe" id="universe">
-
-  <div class="cosmic-background" aria-hidden="true">
-    <div class="cosmic-glow"></div>
-    <div class="cosmic-glow secondary"></div>
-  </div>
-
-  <div class="star-field" id="starField" aria-hidden="true"></div>
-
-  <div class="card-sparkles" id="cardSparkles" aria-hidden="true"></div>
-
-  <div class="flying-cards" id="flying-cards"></div>
-
-  <div class="shooting-star one"></div>
-  <div class="shooting-star two"></div>
-
-  <button id="backToPage2">← Trở về trang 2</button>
-
-  <!-- Hiệu ứng triệu hồi bài -->
-  <div class="summon-effect" id="summonEffect" aria-hidden="true">
-    <div class="summon-ring"></div>
-    <div class="summon-ring second"></div>
-    <div class="summon-core">✦</div>
-  </div>
-
-  <!-- Lá bài phóng lớn -->
-  <div class="card-reveal" id="cardReveal" aria-hidden="true">
-    <div class="reveal-card" id="revealCard">
-      <div class="reveal-card-inner">
-        <div class="reveal-card-symbol">✦</div>
-        <div class="reveal-card-wish" id="revealWish"></div>
-        <div class="reveal-card-symbol bottom">✦</div>
+      <div class="page-controls">
+        <button class="action" id="toPage2" type="button">
+          Lật sang trang tiếp theo →
+        </button>
       </div>
     </div>
+
+    <span class="page-number">01</span>
+  </section>
+
+  <!-- TRANG 2 -->
+  <section class="paper-page" id="page2">
+    <div class="paper-content">
+      <div class="eyebrow">Một trang khác</div>
+
+      <h2 class="paper-title">Một chút tâm tình</h2>
+
+      <div class="paper-text">
+        <p>
+          Có những điều bình thường khi nói ra
+          lại trở nên đặc biệt khi được viết thành lời.
+        </p>
+
+        <p>
+          Vậy nên, trước khi bước sang một thế giới khác,
+          hãy dành một chút thời gian cho trang giấy này.
+        </p>
+
+        <p class="signature">
+          Và bây giờ...<br>
+          <span>một điều bất ngờ đang chờ phía trước.</span>
+        </p>
+      </div>
+
+      <div class="paper-decoration">✦ · ✧ · ✦</div>
+
+      <div class="page-controls">
+        <button class="action" id="backToPage1" type="button">
+          ← Trang trước
+        </button>
+
+        <button class="action" id="toUniverse" type="button">
+          Khám phá vũ trụ ✦
+        </button>
+      </div>
+    </div>
+
+    <span class="page-number">02</span>
+  </section>
+
+  <!-- VŨ TRỤ LÁ BÀI -->
+  <section class="universe" id="universe">
+
+    <!-- Nền ánh sáng tím -->
+    <div class="cosmic-background" aria-hidden="true">
+      <div class="cosmic-glow"></div>
+      <div class="cosmic-glow secondary"></div>
+    </div>
+
+    <!-- Sao nền -->
+    <div class="star-field" aria-hidden="true"></div>
+
+    <!-- Sao lấp lánh được tạo bằng JavaScript -->
+    <div
+      class="card-sparkles"
+      id="card-sparkles"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Các lá bài lơ lửng được tạo bằng JavaScript -->
+    <div
+      class="flying-cards"
+      id="flying-cards"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Sao băng -->
+    <div class="shooting-star one"></div>
+    <div class="shooting-star two"></div>
+
+ tìm được đường đến bên bạn.
+      </p>
+
+      <div class="universe-controls">
+        <button class="action" id="backToPage2" type="button">
+          ← Quay lại trang giấy
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HIỆU ỨNG XÉ GIẤY -->
+  <div class="paper-tear" id="paperTear" aria-hidden="true">
+    <div class="paper-half paper-half-left"></div>
+    <div class="paper-half paper-half-right"></div>
+    <div class="tear-line"></div>
   </div>
 
-  <!-- Phong cảnh băng tuyết -->
-  <div class="ice-world" id="iceWorld" aria-hidden="true">
-    <div class="ice-moon"></div>
-    <div class="ice-mountains"></div>
-    <div class="ice-ground"></div>
-    <div class="ice-snow" id="iceSnow"></div>
-  </div>
+  <!-- BÌA VỞ -->
+  <section class="cover" id="cover">
+    <div class="cover-content">
 
-</section>
+      <div class="corner top-left" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <path d="M5 58 Q5 5 58 5"/>
+          <path d="M5 38 Q5 5 38 5"/>
+          <path d="M16 58 Q16 16 58 16"/>
+          <path d="M5 25 L5 5 L25 5"/>
+          <path d="M20 40 Q32 26 44 40 Q32 54 20 40Z"/>
+          <line x1="32" y1="28" x2="32" y2="52"/>
+        </svg>
+        <span class="corner-star one">✦</span>
+        <span class="corner-star two">✧</span>
+      </div>
+
+      <div class="corner top-right" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <path d="M5 58 Q5 5 58 5"/>
+          <path d="M5 38 Q5 5 38 5"/>
+          <path d="M16 58 Q16 16 58 16"/>
+          <path d="M5 25 L5 5 L25 5"/>
+          <path d="M20 40 Q32 26 44 40 Q32 54 20 40Z"/>
+          <line x1="32" y1="28" x2="32" y2="52"/>
+        </svg>
+        <span class="corner-star one">✦</span>
+        <span class="corner-star two">✧</span>
+      </div>
+
+      <div class="corner bottom-left" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <path d="M5 58 Q5 5 58 5"/>
+          <path d="M5 38 Q5 5 38 5"/>
+          <path d="M16 58 Q16 16 58 16"/>
+          <path d="M5 25 L5 5 L25 5"/>
+          <path d="M20 40 Q32 26 44 40 Q32 54 20 40Z"/>
+          <line x1="32" y1="28" x2="32" y2="52"/>
+        </svg>
+        <span class="corner-star one">✦</span>
+        <span class="corner-star two">✧</span>
+      </div>
+
+      <div class="corner bottom-right" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <path d="M5 58 Q5 5 58 5"/>
+          <path d="M5 38 Q5 5 38 5"/>
+          <path d="M16 58 Q16 16 58 16"/>
+          <path d="M5 25 L5 5 L25 5"/>
+          <path d="M20 40 Q32 26 44 40 Q32 54 20 40Z"/>
+          <line x1="32" y1="28" x2="32" y2="52"/>
+        </svg>
+        <span class="corner-star one">✦</span>
+        <span class="corner-star two">✧</span>
+      </div>
+
+      <div class="cover-title-wrap">
+        <div class="cover-small-title">
+          A collection of little things
+        </div>
+        <h1 class="cover-title">The Little Notebook</h1>
+        <div class="cover-subtitle">
+          — a little world of our own —
+        </div>
+      </div>
+
+      <div class="cover-footer">
+        OPEN IT WHEN YOU ARE READY
+      </div>
+    </div>
+
+    <div class="open-hint">
+      ✧ &nbsp; Một điều nhỏ đang chờ bạn &nbsp; ✧
+    </div>
+
+    <div class="cover-button">
+      <button class="action" id="openNotebook" type="button">
+        Mở quyển vở →
+      </button>
+    </div>
+  </section>
+
+</main>
 
 <script>
-/* =========================
-   ĐIỀU HƯỚNG SỔ TAY
-========================= */
-
+const scene = document.getElementById("scene");
 const page1 = document.getElementById("page1");
 const page2 = document.getElementById("page2");
-const cover = document.getElementById("cover");
 const universe = document.getElementById("universe");
+const paperTear = document.getElementById("paperTear");
 
-const openCover = document.getElementById("openCover");
-const exploreUniverse = document.getElementById("exploreUniverse");
+const openNotebook = document.getElementById("openNotebook");
+const toPage2 = document.getElementById("toPage2");
+const backToPage1 = document.getElementById("backToPage1");
+const toUniverse = document.getElementById("toUniverse");
 const backToPage2 = document.getElementById("backToPage2");
 
 let currentPage = 1;
-let pageBusy = false;
-let universeStarted = false;
+let busy = false;
+let transitionTimers = [];
 
-function later(callback, delay) {
-  return setTimeout(callback, delay);
+function clearTransitionTimers() {
+  transitionTimers.forEach(window.clearTimeout);
+  transitionTimers = [];
 }
 
-openCover.addEventListener("click", () => {
-  if (pageBusy) return;
-  pageBusy = true;
+function later(callback, delay) {
+  const timer = window.setTimeout(callback, delay);
+  transitionTimers.push(timer);
+}
 
-  cover.classList.add("open");
+/* =========================
+   TẠO LÁ BÀI LƠ LỬNG
+========================= */
+
+const flyingCards = document.getElementById("flying-cards");
+const sparkleContainer = document.getElementById("card-sparkles");
+
+/*
+  Mỗi loại bài có cách hiển thị riêng:
+  - Poker: các lá bài Tây
+  - Ma Sói: bài nền tím đen
+  - UNO: bài đỏ đặc trưng
+  - Back: mặt sau trang trí
+*/
+
+const cardDeck = [
+  { type: "poker", rank: "A", suit: "♠", color: "black" },
+  { type: "poker", rank: "K", suit: "♥", color: "red" },
+  { type: "poker", rank: "Q", suit: "♦", color: "red" },
+  { type: "poker", rank: "J", suit: "♣", color: "black" },
+  { type: "poker", rank: "7", suit: "♥", color: "red" },
+  { type: "poker", rank: "A", suit: "♦", color: "red" },
+  { type: "poker", rank: "9", suit: "♠", color: "black" },
+  { type: "poker", rank: "K", suit: "♣", color: "black" },
+  { type: "werewolf", label: "THE WOLF" },
+  { type: "werewolf", label: "MOONLIGHT" },
+  { type: "werewolf", label: "NIGHT" },
+  { type: "uno", symbol: "UNO" },
+  { type: "uno", symbol: "↻" },
+  { type: "uno", symbol: "+4" },
+  { type: "uno", symbol: "7" },
+  { type: "back" }
+];
+
+function createCardFace(card) {
+  const face = document.createElement("div");
+
+  if (card.type === "poker") {
+    const colorClass = card.color === "red" ? "card-red" : "card-black";
+
+    face.className = `card-face poker-card ${colorClass}`;
+
+    face.innerHTML = `
+      <div class="card-corner">
+        <span>${card.rank}</span>
+        <span>${card.suit}</span>
+      </div>
+
+      <div class="card-symbol">${card.suit}</div>
+
+      <div class="card-corner bottom">
+        <span>${card.rank}</span>
+        <span>${card.suit}</span>
+      </div>
+    `;
+
+    return face;
+  }
+
+  if (card.type === "werewolf") {
+    face.className = "card-face werewolf-card";
+
+    face.innerHTML = `
+      <div class="werewolf-art">
+        <div class="werewolf-moon"></div>
+        <div class="werewolf-emoji">🐺</div>
+      </div>
+
+      <div class="werewolf-label">${card.label}</div>
+    `;
+
+    return face;
+  }
+
+  if (card.type === "uno") {
+    face.className = "card-face uno-card";
+
+    face.innerHTML = `
+      <div class="uno-corner">${card.symbol}</div>
+      <div class="uno-symbol">${card.symbol}</div>
+      <div class="uno-corner bottom">${card.symbol}</div>
+    `;
+
+    return face;
+  }
+
+  face.className = "card-face card-back";
+  return face;
+}
+
+function createFlyingCard(index) {
+  const card = cardDeck[index % cardDeck.length];
+  const wrapper = document.createElement("div");
+
+  wrapper.className = "flying-card";
+  wrapper.appendChild(createCardFace(card));
+
+  /*
+    Rải bài ở nhiều vị trí khác nhau.
+    Chừa khu vực trung tâm tương đối thoáng để
+    các lá bài không che mất lá tarot chính.
+  */
+
+  const left = Math.random() * 94;
+  const top = Math.random() * 90 + 3;
+  const width = 34 + Math.random() * 28;
+  const duration = 9 + Math.random() * 12;
+  const turnDuration = 13 + Math.random() * 13;
+  const delay = -(Math.random() * 18);
+  const opacity = 0.38 + Math.random() * 0.38;
+
+  wrapper.style.setProperty("--x", `${left}%`);
+  wrapper.style.setProperty("--y", `${top}%`);
+  wrapper.style.setProperty("--w", `${width}px`);
+  wrapper.style.setProperty("--duration", `${duration}s`);
+  wrapper.style.setProperty("--turn-duration", `${turnDuration}s`);
+  wrapper.style.setProperty("--delay", `${delay}s`);
+  wrapper.style.setProperty("--opacity", opacity);
+
+  /*
+    Một số lá ở xa trung tâm được thu nhỏ và làm mờ
+    để tạo cảm giác có chiều sâu.
+  */
+
+  const distanceFromCenter = Math.abs(left - 50);
+
+  if (distanceFromCenter < 18 && top > 25 && top < 72) {
+    wrapper.style.setProperty("--opacity", opacity * 0.45);
+    wrapper.style.filter = "blur(.4px)";
+  }
+
+  flyingCards.appendChild(wrapper);
+}
+
+/* Tạo 26 lá bài */
+
+for (let i = 0; i < 26; i++) {
+  createFlyingCard(i);
+}
+
+/* =========================
+   TẠO SAO LẤP LÁNH
+========================= */
+
+const sparkleSymbols = ["✦", "✧", "·", "⋆", "✶"];
+const sparkleColors = [
+  "#e9d6ff",
+  "#c8b4f3",
+  "#f3dfba",
+  "#ffffff"
+];
+
+for (let i = 0; i < 36; i++) {
+  const sparkle = document.createElement("span");
+
+  sparkle.className = "sparkle";
+  sparkle.textContent =
+    sparkleSymbols[Math.floor(Math.random() * sparkleSymbols.length)];
+
+  sparkle.style.setProperty("--x", `${Math.random() * 98}%`);
+  sparkle.style.setProperty("--y", `${Math.random() * 98}%`);
+  sparkle.style.setProperty("--size", `${7 + Math.random() * 11}px`);
+  sparkle.style.setProperty("--duration", `${2 + Math.random() * 4}s`);
+  sparkle.style.setProperty("--delay", `${-Math.random() * 6}s`);
+  sparkle.style.setProperty(
+    "--sparkle-color",
+    sparkleColors[Math.floor(Math.random() * sparkleColors.length)]
+  );
+
+  sparkleContainer.appendChild(sparkle);
+}
+
+/* =========================
+   CHUYỂN TRANG
+========================= */
+
+function switchPage(from, to, pageNumber) {
+  if (busy) return;
+  busy = true;
+
+  from.classList.add("leaving");
+  to.classList.add("active");
 
   later(() => {
-    page1.classList.remove("active");
-    page2.classList.add("active");
-    currentPage = 2;
-    pageBusy = false;
-  }, 850);
+    from.classList.remove("active", "leaving");
+    currentPage = pageNumber;
+    busy = false;
+  }, 650);
+}
+
+// Mở bìa vở
+openNotebook.addEventListener("click", () => {
+  if (busy) return;
+  busy = true;
+
+  scene.classList.add("cover-open");
+
+  later(() => {
+    scene.classList.add("cover-hidden");
+    busy = false;
+  }, 1450);
 });
 
-exploreUniverse.addEventListener("click", () => {
-  if (pageBusy || currentPage !== 2) return;
-  pageBusy = true;
+// Trang 1 → Trang 2
+toPage2.addEventListener("click", () => {
+  switchPage(page1, page2, 2);
+});
 
-  page2.classList.add("leaving", "ripping");
+// Trang 2 → Trang 1
+backToPage1.addEventListener("click", () => {
+  switchPage(page2, page1, 1);
+});
 
+// Trang 2 → Vũ trụ: xé trang giấy làm đôi
+toUniverse.addEventListener("click", () => {
+  if (busy) return;
+  busy = true;
+
+  clearTransitionTimers();
+
+  // Đặt lại trạng thái để có thể chạy lại hiệu ứng nhiều lần
+  paperTear.classList.remove("torn");
+  paperTear.classList.add("tearing");
+  page2.classList.add("ripping");
+
+  // Đường rách chạy xuống, sau đó hai nửa giấy tách ra
+  later(() => {
+    paperTear.classList.add("torn");
+  }, 420);
+
+  // Cho vũ trụ hiện ra phía sau lớp giấy đang tách
+  later(() => {
+    universe.classList.add("active");
+  }, 520);
+
+  // Kết thúc: bỏ trang giấy cũ khỏi màn hình
   later(() => {
     page2.classList.remove("active", "leaving", "ripping");
-    universe.classList.add("active");
-    currentPage = 3;
-    pageBusy = false;
-
-    if (!universeStarted) {
-      createCosmos();
-      createFlyingCards();
-      universeStarted = true;
-    }
-  }, 650);
+    paperTear.classList.remove("tearing", "torn");
+    currentPage = "universe";
+    busy = false;
+  }, 1550);
 });
 
+// Vũ trụ → Trang 2
 backToPage2.addEventListener("click", () => {
-  if (pageBusy || magicBusy) return;
-  pageBusy = true;
+  if (busy) return;
+  busy = true;
 
   universe.classList.remove("active");
 
@@ -2022,338 +3443,9 @@ backToPage2.addEventListener("click", () => {
     page2.classList.remove("leaving", "ripping");
     page2.classList.add("active");
     currentPage = 2;
-    pageBusy = false;
+    busy = false;
   }, 650);
 });
-
-/* =========================
-   TẠO SAO VÀ ÁNH SÁNG
-========================= */
-
-const starField = document.getElementById("starField");
-const cardSparkles = document.getElementById("cardSparkles");
-
-function createCosmos() {
-  for (let i = 0; i < 115; i++) {
-    const star = document.createElement("span");
-    star.className = "star";
-
-    const size = Math.random() * 2.2 + .6;
-    star.style.width = size + "px";
-    star.style.height = size + "px";
-    star.style.left = Math.random() * 100 + "%";
-    star.style.top = Math.random() * 100 + "%";
-    star.style.setProperty("--duration", (2 + Math.random() * 4) + "s");
-    star.style.animationDelay = (-Math.random() * 5) + "s";
-
-    starField.appendChild(star);
-  }
-
-  for (let i = 0; i < 28; i++) {
-    const sparkle = document.createElement("span");
-    sparkle.className = "sparkle";
-    sparkle.textContent = Math.random() > .5 ? "✦" : "·";
-    sparkle.style.left = Math.random() * 100 + "%";
-    sparkle.style.top = Math.random() * 100 + "%";
-    sparkle.style.fontSize = (8 + Math.random() * 13) + "px";
-    sparkle.style.setProperty("--duration", (3 + Math.random() * 5) + "s");
-    sparkle.style.animationDelay = (-Math.random() * 5) + "s";
-
-    cardSparkles.appendChild(sparkle);
-  }
-}
-
-/* =========================
-   TẠO CÁC LÁ BÀI BAY
-========================= */
-
-const cardContainer = document.getElementById("flying-cards");
-
-const cardDeck = [
-  { name: "POKER", mark: "♠" },
-  { name: "UNO", mark: "✦" },
-  { name: "WEREWOLF", mark: "☾" },
-  { name: "POKER", mark: "♥" },
-  { name: "UNO", mark: "★" },
-  { name: "WEREWOLF", mark: "✧" },
-  { name: "POKER", mark: "♦" },
-  { name: "UNO", mark: "✦" },
-  { name: "WEREWOLF", mark: "☽" },
-  { name: "POKER", mark: "♣" },
-  { name: "UNO", mark: "✧" },
-  { name: "POKER", mark: "★" }
-];
-
-function createCardFace(cardData) {
-  const face = document.createElement("div");
-  face.className = "card-face";
-
-  const cornerTop = document.createElement("span");
-  cornerTop.className = "corner";
-  cornerTop.textContent = cardData.mark;
-
-  const mark = document.createElement("span");
-  mark.className = "card-mark";
-  mark.textContent = cardData.mark;
-
-  const name = document.createElement("span");
-  name.className = "card-name";
-  name.textContent = cardData.name;
-
-  const cornerBottom = document.createElement("span");
-  cornerBottom.className = "corner bottom";
-  cornerBottom.textContent = cardData.mark;
-
-  face.append(cornerTop, mark, name, cornerBottom);
-  return face;
-}
-
-function createFlyingCards() {
-  cardContainer.innerHTML = "";
-
-  cardDeck.forEach((data, index) => {
-    const card = document.createElement("div");
-    card.className = "flying-card";
-    card.appendChild(createCardFace(data));
-
-    const x = 7 + Math.random() * 79;
-    const y = 12 + Math.random() * 72;
-
-    card.style.left = x + "%";
-    card.style.top = y + "%";
-    card.style.setProperty("--rotation", (-20 + Math.random() * 40) + "deg");
-    card.style.setProperty("--float-time", (4 + Math.random() * 4) + "s");
-    card.style.animationDelay = (-Math.random() * 5) + "s";
-    card.dataset.cardIndex = String(index);
-
-    cardContainer.appendChild(card);
-  });
-}
-
-/* =========================
-   CHỌN BÀI VÀ LỜI CHÚC
-========================= */
-
-const cardReveal = document.getElementById("cardReveal");
-const revealWish = document.getElementById("revealWish");
-const summonEffect = document.getElementById("summonEffect");
-const iceWorld = document.getElementById("iceWorld");
-const iceSnow = document.getElementById("iceSnow");
-
-let magicBusy = false;
-let holdTimer = null;
-let holdTriggered = false;
-let suppressNextClick = false;
-let pointerStartX = 0;
-let pointerStartY = 0;
-
-const HOLD_DURATION = 650;
-
-const sharedWish = `Chúc mọi điều tốt đẹp sẽ tìm đến.
-Mong những ngày vui luôn dài hơn,
-những ngày buồn sẽ ngắn lại,
-và luôn có đủ dũng khí để theo đuổi
-những điều khiến trái tim hạnh phúc.`;
-
-function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function createIceSnow() {
-  if (iceSnow.children.length) return;
-
-  for (let i = 0; i < 65; i++) {
-    const snow = document.createElement("span");
-
-    snow.style.left = Math.random() * 100 + "%";
-    snow.style.animationDuration = (5 + Math.random() * 8) + "s";
-    snow.style.animationDelay = (-Math.random() * 12) + "s";
-    snow.style.opacity = .3 + Math.random() * .7;
-
-    const size = 2 + Math.random() * 3;
-    snow.style.width = size + "px";
-    snow.style.height = size + "px";
-
-    iceSnow.appendChild(snow);
-  }
-}
-
-async function typeMagicWish(text) {
-  revealWish.textContent = "";
-
-  for (const character of text) {
-    revealWish.textContent += character;
-    await wait(35);
-  }
-}
-
-function getRandomMagicCard(cards) {
-  return cards[Math.floor(Math.random() * cards.length)];
-}
-
-async function gatherMagicCards(x, y, cards) {
-  const clones = [];
-
-  cards.forEach((card, index) => {
-    const rect = card.getBoundingClientRect();
-    const clone = card.cloneNode(true);
-
-    clone.style.position = "fixed";
-    clone.style.left = rect.left + "px";
-    clone.style.top = rect.top + "px";
-    clone.style.width = rect.width + "px";
-    clone.style.height = rect.height + "px";
-    clone.style.margin = "0";
-    clone.style.zIndex = "9999";
-    clone.style.pointerEvents = "none";
-    clone.style.animation = "none";
-    clone.style.transition =
-      "transform .85s cubic-bezier(.2,.8,.2,1), opacity .7s ease";
-
-    document.body.appendChild(clone);
-    clones.push(clone);
-
-    const dx = x - (rect.left + rect.width / 2);
-    const dy = y - (rect.top + rect.height / 2);
-
-    requestAnimationFrame(() => {
-      clone.style.transform =
-        `translate(${dx}px,${dy}px) rotate(${720 + index * 90}deg) scale(.08)`;
-      clone.style.opacity = "0";
-    });
-  });
-
-  cardContainer.style.opacity = "0";
-  await wait(900);
-  clones.forEach(clone => clone.remove());
-}
-
-async function revealMagicCard(selectedCard, x, y, isSummon = false) {
-  if (magicBusy || currentPage !== 3) return;
-
-  magicBusy = true;
-
-  const cards = [...cardContainer.querySelectorAll(".flying-card")];
-
-  if (!selectedCard || !cards.length) {
-    magicBusy = false;
-    return;
-  }
-
-  if (isSummon) {
-    summonEffect.style.left = x + "px";
-    summonEffect.style.top = y + "px";
-    summonEffect.classList.add("active");
-
-    await gatherMagicCards(x, y, cards);
-
-    summonEffect.classList.remove("active");
-    await wait(150);
-  } else {
-    cardContainer.style.opacity = "0";
-  }
-
-  revealWish.textContent = "";
-  cardReveal.classList.remove("slide-away");
-  cardReveal.classList.add("show");
-  cardReveal.setAttribute("aria-hidden", "false");
-
-  await wait(900);
-  await typeMagicWish(sharedWish);
-
-  // Để người nhận đọc lời chúc trước khi chuyển cảnh
-  await wait(2600);
-
-  createIceSnow();
-  iceWorld.classList.add("show");
-  iceWorld.setAttribute("aria-hidden", "false");
-
-  await wait(1000);
-
-  cardReveal.classList.add("slide-away");
-
-  await wait(1300);
-
-  // Cảnh băng tuyết giữ nguyên sau khi lá bài rời màn hình
-  magicBusy = false;
-}
-
-// Cách 1: chạm vào lá bài để chọn
-cardContainer.addEventListener("click", (event) => {
-  if (suppressNextClick) {
-    suppressNextClick = false;
-    return;
-  }
-
-  if (magicBusy) return;
-
-  const card = event.target.closest(".flying-card");
-  if (!card) return;
-
-  const rect = card.getBoundingClientRect();
-
-  revealMagicCard(
-    card,
-    rect.left + rect.width / 2,
-    rect.top + rect.height / 2,
-    false
-  );
-});
-
-// Cách 2: nhấn giữ tại bất kỳ điểm nào trên vũ trụ
-universe.addEventListener("pointerdown", (event) => {
-  if (magicBusy || currentPage !== 3) return;
-  if (event.target.closest("#backToPage2")) return;
-
-  // Nếu chạm trực tiếp vào một lá bài thì ưu tiên cách chọn bài.
-  if (event.target.closest(".flying-card")) return;
-
-  const cards = [...cardContainer.querySelectorAll(".flying-card")];
-  if (!cards.length) return;
-
-  holdTriggered = false;
-  pointerStartX = event.clientX;
-  pointerStartY = event.clientY;
-
-  holdTimer = setTimeout(async () => {
-    holdTriggered = true;
-    suppressNextClick = true;
-
-    const selectedCard = getRandomMagicCard(cards);
-
-    await revealMagicCard(
-      selectedCard,
-      pointerStartX,
-      pointerStartY,
-      true
-    );
-  }, HOLD_DURATION);
-});
-
-universe.addEventListener("pointermove", (event) => {
-  if (!holdTimer) return;
-
-  const dx = event.clientX - pointerStartX;
-  const dy = event.clientY - pointerStartY;
-
-  if (Math.hypot(dx, dy) > 18) {
-    clearTimeout(holdTimer);
-    holdTimer = null;
-  }
-});
-
-function stopMagicHold() {
-  if (holdTimer) {
-    clearTimeout(holdTimer);
-    holdTimer = null;
-  }
-}
-
-universe.addEventListener("pointerup", stopMagicHold);
-universe.addEventListener("pointercancel", stopMagicHold);
-universe.addEventListener("pointerleave", stopMagicHold);
 </script>
-
 </body>
 </html>
-
