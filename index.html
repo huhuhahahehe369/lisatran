@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#171126">
-<title>The Little Notebook</title>
+<title>20/10</title>
 
 <style>
 :root {
@@ -1395,443 +1395,178 @@ button { font: inherit; }
   to { transform: scale(1.5); opacity: 0.55; }
 }
 
-/* ==========================
-   CHUYỂN CẢNH BĂNG TUYẾT
-========================== */
+/* =========================================
+   CẢNH KẾT: GHÉP GIẤY VÀ KHÉP BÌA TOÀN MÀN HÌNH
+========================================= */
 
-.ice-world {
-  position: absolute;
+.paper-tear.ending-reverse {
+  position: fixed;
   inset: 0;
-  z-index: 40;
+  z-index: 999;
   overflow: hidden;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-
-  background:
-    radial-gradient(ellipse at 50% 30%,
-      rgba(213, 242, 255, 0.65),
-      transparent 38%),
-    linear-gradient(to bottom,
-      #101b3a 0%,
-      #4b7598 48%,
-      #c5e4f0 82%,
-      #effaff 100%);
-
-  transition: opacity 1.4s ease, visibility 1.4s;
+  background: transparent;
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.ice-world.show {
+/* Tắt chuyển động trong lúc đặt hai mảnh vào vị trí ban đầu */
+.paper-tear.ending-reverse.preparing .paper-half {
+  transition: none !important;
+}
+
+/* Giữ nguyên đúng hình dáng hai mảnh giấy ban đầu */
+.paper-tear.ending-reverse .paper-half {
+  transition:
+    transform 1.05s cubic-bezier(.65, 0, .35, 1),
+    opacity 1.05s ease;
+  opacity: 1;
+}
+
+/* Ẩn đường sáng ở giữa khi kết thúc */
+.paper-tear.ending-reverse .tear-line {
+  opacity: 0 !important;
+  height: 100%;
+}
+
+/* Nội dung kết */
+.ending-content {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 24px;
+  pointer-events: none;
+}
+
+.ending-words {
+  width: min(82vw, 430px);
+  margin: 0;
+  color: #594333;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(17px, 4vw, 23px);
+  line-height: 1.9;
+  text-align: center;
+  white-space: pre-line;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.paper-tear.ending-reverse.words-visible .ending-words {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Bìa cuối phủ toàn bộ màn hình như bìa gốc */
+.ending-book {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  width: 100%;
+  height: 100%;
+  perspective: 1400px;
+  opacity: 0;
+  visibility: hidden;
+  transform: none;
+  transition: opacity .8s ease, visibility .8s ease;
+}
+
+.paper-tear.ending-reverse.book-visible .ending-book {
   opacity: 1;
   visibility: visible;
 }
 
-.ice-moon {
-  position: absolute;
-  top: 12%;
-  right: 16%;
-  width: clamp(50px, 10vw, 100px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: #effaff;
-  box-shadow:
-    0 0 25px rgba(222, 246, 255, 0.8),
-    0 0 90px rgba(173, 223, 255, 0.55);
-}
-
-.ice-mountains {
-  position: absolute;
-  left: -10%;
-  right: -10%;
-  bottom: 18%;
-  height: 48%;
-  background: linear-gradient(145deg, #e5f7ff, #8bbbd3 55%, #446e91);
-  clip-path: polygon(
-    0 100%, 0 65%, 12% 30%, 20% 57%, 36% 5%,
-    48% 53%, 60% 17%, 74% 60%, 87% 28%, 100% 62%,
-    100% 100%
-  );
-  filter: drop-shadow(0 -8px 20px rgba(218, 244, 255, 0.3));
-}
-
-.ice-ground {
-  position: absolute;
-  left: -10%;
-  right: -10%;
-  bottom: -8%;
-  height: 37%;
-  border-radius: 50% 50% 0 0;
-  background: linear-gradient(to bottom, #e9f9ff, #b9dfef);
-  box-shadow: 0 -15px 60px rgba(221, 245, 255, 0.35);
-}
-
-.ice-snow {
+/* Phần ruột vở nằm sau bìa */
+.book-pages {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      #f9edda 0,
+      #f9edda 3px,
+      #dfcfb7 4px
+    );
 }
 
-.ice-snow span {
+/* Bìa dùng cùng màu, viền và bóng với #cover ban đầu */
+.book-cover {
   position: absolute;
-  top: -15px;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: white;
-  box-shadow: 0 0 7px rgba(255, 255, 255, 0.9);
-  animation: snowFall linear infinite;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  transform-origin: left center;
+  transform: rotateY(-155deg);
+  backface-visibility: hidden;
+  background: radial-gradient(ellipse at center, #fff8e9, #e9d5b5);
+  box-shadow: inset -8px 0 22px rgba(70, 46, 27, .12);
 }
 
-@keyframes snowFall {
-  from { transform: translate3d(0, -5vh, 0); }
-  to { transform: translate3d(35px, 110vh, 0); }
+/* Hai đường viền trang trí giống bìa gốc */
+.book-cover::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  z-index: 5;
+  border: 1px solid rgba(112, 77, 47, .5);
+  pointer-events: none;
 }
 
-/* Lá bài trượt xuống để lộ cảnh băng tuyết */
-.card-reveal.slide-away .reveal-card {
-  animation: cardSlideDown 1.15s cubic-bezier(.65, 0, .8, .25) forwards;
+.book-cover::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  z-index: 5;
+  border: 1px solid rgba(112, 77, 47, .18);
+  pointer-events: none;
 }
 
-@keyframes cardSlideDown {
+/* Nội dung bìa gốc giữ nguyên kích thước và bố cục */
+.book-cover .cover-content {
+  position: absolute;
+  inset: 28px;
+}
+
+/* Không hiển thị nút mở trên bìa kết */
+.book-cover .cover-button,
+.book-cover .open-hint {
+  display: none !important;
+}
+
+/* Bìa mở ra rồi khép lại */
+.paper-tear.ending-reverse.book-closing .book-cover {
+  animation: closeEndingBook 1.5s cubic-bezier(.45, 0, .25, 1) forwards;
+}
+
+@keyframes closeEndingBook {
   0% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: rotateY(-155deg);
   }
-  60% {
-    opacity: 1;
-    transform: translateY(45vh) scale(0.95) rotate(4deg);
+  65% {
+    transform: rotateY(8deg);
   }
   100% {
-    opacity: 0;
-    transform: translateY(115vh) scale(0.8) rotate(9deg);
+    transform: rotateY(0deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .summon-ring,
-  .summon-core,
-  .ice-snow span {
-    animation-duration: 8s;
+  .paper-tear.ending-reverse .paper-half,
+  .paper-tear.ending-reverse .ending-words,
+  .paper-tear.ending-reverse .ending-book {
+    transition-duration: .01ms;
+  }
+
+  .paper-tear.ending-reverse.book-closing .book-cover {
+    animation-duration: .01ms;
   }
 }
 
-/* ==========================
-   CHIM CÁNH CỤT ĐÁNG YÊU
-========================== */
-
-.penguin-scene {
-  position: absolute;
-  inset: 0;
-  z-index: 35;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-/* Lời chúc xuất hiện sau khi chim lao tới */
-.penguin-wish {
-  position: absolute;
-  z-index: 4;
-  top: 13%;
-  left: 50%;
-  width: min(85%, 460px);
-  transform: translate(-50%, 20px);
-  opacity: 0;
-
-  color: #f5fcff;
-  text-align: center;
-  white-space: pre-line;
-  font-size: clamp(20px, 5vw, 29px);
-  line-height: 1.8;
-
-  text-shadow:
-    0 2px 8px rgba(25, 65, 95, .4),
-    0 0 25px rgba(255, 255, 255, .55);
-
-  transition: opacity 1s ease, transform 1s ease;
-}
-
-.penguin-wish.show {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-/* Nhân vật */
-.penguin {
-  position: absolute;
-  left: 50%;
-  bottom: -280px;
-  width: 190px;
-  height: 235px;
-  transform: translateX(-50%);
-  opacity: 0;
-}
-
-.penguin.enter {
-  animation: penguinRunIn 1.45s cubic-bezier(.2,.8,.3,1) forwards;
-}
-
-.penguin.splat {
-  animation: penguinBellySplat 1.1s cubic-bezier(.2,.8,.3,1) forwards;
-}
-
-.penguin-shadow {
-  position: absolute;
-  left: 15%;
-  bottom: 4px;
-  width: 70%;
-  height: 22px;
-  border-radius: 50%;
-  background: rgba(39, 74, 100, .25);
-  filter: blur(7px);
-}
-
-.penguin-body {
-  position: absolute;
-  left: 50%;
-  bottom: 12px;
-  width: 155px;
-  height: 195px;
-  transform: translateX(-50%);
-  border-radius: 48% 48% 43% 43%;
-
-  background: linear-gradient(
-    120deg,
-    #394957 0%,
-    #1b2733 40%,
-    #101a25 100%
-  );
-
-  box-shadow:
-    inset -10px -7px 0 rgba(0, 0, 0, .12),
-    inset 8px 4px 10px rgba(255, 255, 255, .12),
-    0 12px 25px rgba(29, 64, 89, .15);
-}
-
-/* Bụng trắng mềm */
-.penguin-belly {
-  position: absolute;
-  left: 50%;
-  bottom: 9px;
-  width: 112px;
-  height: 143px;
-  transform: translateX(-50%);
-  border-radius: 48% 48% 45% 45%;
-
-  background: linear-gradient(
-    145deg,
-    #ffffff 0%,
-    #f7fbff 65%,
-    #dceaf3 100%
-  );
-
-  box-shadow: inset -5px -5px 10px rgba(115, 151, 177, .12);
-}
-
-/* Mặt */
-.penguin-face {
-  position: absolute;
-  top: 34px;
-  left: 50%;
-  width: 95px;
-  height: 62px;
-  transform: translateX(-50%);
-}
-
-.penguin-eye {
-  position: absolute;
-  top: 12px;
-  width: 12px;
-  height: 16px;
-  border-radius: 50%;
-  background: #10141b;
-}
-
-.penguin-eye span {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: white;
-}
-
-.eye-left { left: 17px; }
-.eye-right { right: 17px; }
-
-.penguin-beak {
-  position: absolute;
-  left: 50%;
-  top: 29px;
-  width: 19px;
-  height: 14px;
-  transform: translateX(-50%);
-  background: #ffb94f;
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  filter: drop-shadow(0 2px 1px rgba(130, 79, 28, .2));
-}
-
-.penguin-blush {
-  position: absolute;
-  top: 34px;
-  width: 16px;
-  height: 8px;
-  border-radius: 50%;
-  background: #f7a7b0;
-  opacity: .85;
-  filter: blur(1px);
-}
-
-.blush-left { left: 4px; }
-.blush-right { right: 4px; }
-
-/* Cánh nhỏ */
-.penguin-wing {
-  position: absolute;
-  top: 85px;
-  width: 35px;
-  height: 65px;
-  border-radius: 50%;
-  background: linear-gradient(140deg, #344451, #17232f);
-  z-index: 2;
-}
-
-.wing-left {
-  left: -13px;
-  transform: rotate(24deg);
-}
-
-.wing-right {
-  right: -13px;
-  transform: rotate(-24deg);
-}
-
-/* Chân cam */
-.penguin-foot {
-  position: absolute;
-  bottom: -4px;
-  width: 40px;
-  height: 19px;
-  border-radius: 50% 50% 45% 45%;
-  background: linear-gradient(#ffca66, #ff9e38);
-  z-index: 3;
-}
-
-.foot-left {
-  left: 25px;
-  transform: rotate(-9deg);
-}
-
-.foot-right {
-  right: 25px;
-  transform: rotate(9deg);
-}
-
-/* Chạy từ dưới lên */
-@keyframes penguinRunIn {
-  0% {
-    opacity: 0;
-    bottom: -280px;
-    transform: translateX(-50%) scale(.7);
-  }
-
-  65% {
-    opacity: 1;
-    bottom: 13%;
-    transform: translateX(-50%) scale(1.04);
-  }
-
-  78% {
-    bottom: 10%;
-    transform: translateX(-50%) scale(.97, 1.04);
-  }
-
-  100% {
-    opacity: 1;
-    bottom: 10%;
-    transform: translateX(-50%) scale(1);
-  }
-}
-
-/* Bụng ép sát vào màn hình */
-@keyframes penguinBellySplat {
-  0% {
-    bottom: 10%;
-    transform: translateX(-50%) scale(1);
-  }
-
-  35% {
-    bottom: 9%;
-    transform: translateX(-50%) scale(1.35, .78);
-  }
-
-  55% {
-    bottom: 8%;
-    transform: translateX(-50%) scale(1.42, .74);
-  }
-
-  75% {
-    bottom: 8%;
-    transform: translateX(-50%) scale(1.34, .82);
-  }
-
-  100% {
-    bottom: 8%;
-    transform: translateX(-50%) scale(1.38, .78);
-  }
-}
-
-@media (max-width: 600px) {
-  .penguin {
-    transform: translateX(-50%) scale(.85);
-    transform-origin: bottom center;
-  }
-
-  .penguin.enter {
-    animation-name: penguinRunInMobile;
-  }
-
-  @keyframes penguinRunInMobile {
-    0% {
-      opacity: 0;
-      bottom: -280px;
-      transform: translateX(-50%) scale(.55);
-    }
-
-    70% {
-      opacity: 1;
-      bottom: 12%;
-      transform: translateX(-50%) scale(.9);
-    }
-
-    100% {
-      opacity: 1;
-      bottom: 10%;
-      transform: translateX(-50%) scale(.85);
-    }
-  }
-
-  .penguin.splat {
-    animation-name: penguinBellySplatMobile;
-  }
-
-  @keyframes penguinBellySplatMobile {
-    0% {
-      bottom: 10%;
-      transform: translateX(-50%) scale(.85);
-    }
-
-    40% {
-      bottom: 8%;
-      transform: translateX(-50%) scale(1.15, .67);
-    }
-
-    65%, 100% {
-      bottom: 7%;
-      transform: translateX(-50%) scale(1.2, .65);
-    }
-  }
-}
 
 </style>
 </head>
@@ -1842,77 +1577,32 @@ button { font: inherit; }
   <!-- TRANG 1: LỜI NÓI ĐẦU -->
   <section class="paper-page active" id="page1">
     <div class="paper-content">
-      <div class="eyebrow">Lời nói đầu</div>
+     
 
-      <h2 class="paper-title">Gửi bạn,</h2>
+      <h2 class="paper-title">Gửi Uyên Thảo / Lía,</h2>
 
       <div class="paper-text">
         <p>
-          Có một vài điều mà tui muốn gửi đến bạn,
-          nên đã quyết định cất chúng vào quyển vở nhỏ này.
+          chúc mừng 20/10 lúc hơi trễ
         </p>
 
         <p>
-          Mong rằng khi mở từng trang giấy,
-          bạn sẽ tìm thấy một chút bất ngờ và niềm vui.
+          Mong rằng khi mở ra em sẽ tìm đc một chút niềm vui và bất ngờ.
         </p>
 
-        <p class="signature">
-          Thân gửi,<br>
-          <span>— Người viết quyển vở này —</span>
-        </p>
+        
       </div>
 
       <div class="paper-decoration">✧ · ☾ · ✧</div>
 
       <div class="page-controls">
-        <button class="action" id="toPage2" type="button">
-          Lật sang trang tiếp theo →
-        </button>
-      </div>
-    </div>
-
-    <span class="page-number">01</span>
-  </section>
-
-  <!-- TRANG 2 -->
-  <section class="paper-page" id="page2">
-    <div class="paper-content">
-      <div class="eyebrow">Một trang khác</div>
-
-      <h2 class="paper-title">Một chút tâm tình</h2>
-
-      <div class="paper-text">
-        <p>
-          Có những điều bình thường khi nói ra
-          lại trở nên đặc biệt khi được viết thành lời.
-        </p>
-
-        <p>
-          Vậy nên, trước khi bước sang một thế giới khác,
-          hãy dành một chút thời gian cho trang giấy này.
-        </p>
-
-        <p class="signature">
-          Và bây giờ...<br>
-          <span>một điều bất ngờ đang chờ phía trước.</span>
-        </p>
-      </div>
-
-      <div class="paper-decoration">✦ · ✧ · ✦</div>
-
-      <div class="page-controls">
-        <button class="action" id="backToPage1" type="button">
-          ← Trang trước
-        </button>
-
         <button class="action" id="toUniverse" type="button">
           Khám phá vũ trụ ✦
         </button>
       </div>
     </div>
 
-    <span class="page-number">02</span>
+    <span class="page-number">01</span>
   </section>
 
   <!-- VŨ TRỤ LÁ BÀI -->
@@ -1945,71 +1635,25 @@ button { font: inherit; }
     <div class="shooting-star one"></div>
     <div class="shooting-star two"></div>
 
-    
-
-
+    <div class="universe-content">
       <div class="universe-controls">
-        <button class="action" id="backToPage2" type="button">
+        <button class="action" id="backToPage1" type="button">
           ← Quay lại trang giấy
         </button>
       </div>
     </div>
+
     <!-- Lá bài được chọn và lời chúc -->
 <div class="card-reveal" id="cardReveal" aria-hidden="true">
   <div class="reveal-card" id="revealCard">
     <div class="reveal-card-inner">
       <div class="reveal-card-symbol">✦</div>
       <div class="reveal-card-wish" id="revealWish">
-        Chúc mọi điều tốt đẹp sẽ tìm đến.
+  
       </div>
       <div class="reveal-card-symbol bottom">✦</div>
     </div>
   </div>
-</div>
-
-<!-- Thế giới băng tuyết xuất hiện phía sau lá bài -->
-<div class="ice-world" id="iceWorld" aria-hidden="true">
-  <div class="ice-moon"></div>
-  <div class="ice-mountains"></div>
-  <div class="ice-ground"></div>
-  <div class="ice-snow" id="iceSnow"></div>
-  
-<!-- Chim cánh cụt chạy tới màn hình -->
-<div class="penguin-scene" id="penguinScene">
-  <div class="penguin-wish" id="penguinWish">
-    Mong những điều dịu dàng nhất
-    sẽ luôn tìm đến.
-  </div>
-
-  <div class="penguin" id="penguin">
-    <div class="penguin-shadow"></div>
-
-    <div class="penguin-body">
-      <div class="penguin-wing wing-left"></div>
-      <div class="penguin-wing wing-right"></div>
-
-      <div class="penguin-belly"></div>
-
-      <div class="penguin-face">
-        <div class="penguin-eye eye-left">
-          <span></span>
-        </div>
-        <div class="penguin-eye eye-right">
-          <span></span>
-        </div>
-
-        <div class="penguin-blush blush-left"></div>
-        <div class="penguin-blush blush-right"></div>
-
-        <div class="penguin-beak"></div>
-      </div>
-
-      <div class="penguin-foot foot-left"></div>
-      <div class="penguin-foot foot-right"></div>
-    </div>
-  </div>
-</div>
-
 </div>
 
 <!-- Hiệu ứng tụ bài khi nhấn giữ -->
@@ -2025,6 +1669,20 @@ button { font: inherit; }
     <div class="paper-half paper-half-left"></div>
     <div class="paper-half paper-half-right"></div>
     <div class="tear-line"></div>
+
+    <!-- Cảnh kết dùng lại chính hai mảnh giấy của hiệu ứng xé ban đầu -->
+    <div class="ending-content">
+      <p class="ending-words" id="endingWords">
+  chúc em luôn xinh đẹp, học giỏi,
+  Valorant thì rank bay cao,
+  an khang thịnh vượng, phát lộc phát tài.
+</p>
+    </div>
+
+    <div class="ending-book" id="endingBook">
+      <div class="book-pages"></div>
+      <div class="book-cover" id="endingBookCover"></div>
+    </div>
   </div>
 
   <!-- BÌA VỞ -->
@@ -2085,28 +1743,25 @@ button { font: inherit; }
 
       <div class="cover-title-wrap">
         <div class="cover-small-title">
-          A collection of little things
+        
         </div>
-        <h1 class="cover-title">The Little Notebook</h1>
+        <h1 class="cover-title">Notebook</h1>
         <div class="cover-subtitle">
-          — a little world of our own —
+         
         </div>
       </div>
 
-      <div class="cover-footer">
-        OPEN IT WHEN YOU ARE READY
-      </div>
+     
     </div>
 
-    <div class="open-hint">
-      ✧ &nbsp; Một điều nhỏ đang chờ bạn &nbsp; ✧
-    </div>
+  
 
     <div class="cover-button">
       <button class="action" id="openNotebook" type="button">
         Mở quyển vở →
       </button>
     </div>
+    
   </section>
 
 </main>
@@ -2114,15 +1769,12 @@ button { font: inherit; }
 <script>
 const scene = document.getElementById("scene");
 const page1 = document.getElementById("page1");
-const page2 = document.getElementById("page2");
 const universe = document.getElementById("universe");
 const paperTear = document.getElementById("paperTear");
 
 const openNotebook = document.getElementById("openNotebook");
-const toPage2 = document.getElementById("toPage2");
 const backToPage1 = document.getElementById("backToPage1");
 const toUniverse = document.getElementById("toUniverse");
-const backToPage2 = document.getElementById("backToPage2");
 
 let currentPage = 1;
 let busy = false;
@@ -2341,17 +1993,7 @@ openNotebook.addEventListener("click", () => {
   }, 1450);
 });
 
-// Trang 1 → Trang 2
-toPage2.addEventListener("click", () => {
-  switchPage(page1, page2, 2);
-});
-
-// Trang 2 → Trang 1
-backToPage1.addEventListener("click", () => {
-  switchPage(page2, page1, 1);
-});
-
-// Trang 2 → Vũ trụ: xé trang giấy làm đôi
+// Trang 1 → Vũ trụ: xé trang giấy làm đôi
 toUniverse.addEventListener("click", () => {
   if (busy) return;
   busy = true;
@@ -2361,7 +2003,7 @@ toUniverse.addEventListener("click", () => {
   // Đặt lại trạng thái để có thể chạy lại hiệu ứng nhiều lần
   paperTear.classList.remove("torn");
   paperTear.classList.add("tearing");
-  page2.classList.add("ripping");
+  page1.classList.add("ripping");
 
   // Đường rách chạy xuống, sau đó hai nửa giấy tách ra
   later(() => {
@@ -2375,24 +2017,24 @@ toUniverse.addEventListener("click", () => {
 
   // Kết thúc: bỏ trang giấy cũ khỏi màn hình
   later(() => {
-    page2.classList.remove("active", "leaving", "ripping");
+    page1.classList.remove("active", "leaving", "ripping");
     paperTear.classList.remove("tearing", "torn");
     currentPage = "universe";
     busy = false;
   }, 1550);
 });
 
-// Vũ trụ → Trang 2
-backToPage2.addEventListener("click", () => {
+// Vũ trụ → Trang 1
+backToPage1.addEventListener("click", () => {
   if (busy) return;
   busy = true;
 
   universe.classList.remove("active");
 
   later(() => {
-    page2.classList.remove("leaving", "ripping");
-    page2.classList.add("active");
-    currentPage = 2;
+    page1.classList.remove("leaving", "ripping");
+    page1.classList.add("active");
+    currentPage = 1;
     busy = false;
   }, 650);
 });
@@ -2406,8 +2048,6 @@ const magicReveal = document.getElementById("cardReveal");
 const magicRevealCard = document.getElementById("revealCard");
 const magicWish = document.getElementById("revealWish");
 const magicSummon = document.getElementById("summonEffect");
-const magicIceWorld = document.getElementById("iceWorld");
-const magicIceSnow = document.getElementById("iceSnow");
 
 let magicBusy = false;
 let holdTimer = null;
@@ -2420,29 +2060,13 @@ const HOLD_DURATION = 650;
 
 // Sửa lời chúc tại đây.
 // Tất cả các lá bài đều dùng chung lời chúc này.
-const sharedWish = `Chúc mọi điều tốt đẹp sẽ tìm đến.
-Mong những ngày vui luôn dài hơn,
-những ngày buồn sẽ ngắn lại,
-và luôn có đủ dũng khí để theo đuổi
-những điều khiến trái tim hạnh phúc.`;
+const sharedWish = `Chúc Uyên Thảo / Lía của anh
+ngày càng xinh đẹp, học hành giỏi giang,
+và bắn Valorant ngày càng đỉnh hơn.
 
-// Tạo tuyết cho cảnh cuối
-function createIceSnow() {
-  if (!magicIceSnow || magicIceSnow.children.length > 0) return;
-
-  for (let i = 0; i < 65; i++) {
-    const snow = document.createElement("span");
-
-    snow.style.left = Math.random() * 100 + "%";
-    snow.style.animationDuration = (5 + Math.random() * 8) + "s";
-    snow.style.animationDelay = (-Math.random() * 12) + "s";
-    snow.style.opacity = 0.3 + Math.random() * 0.7;
-    snow.style.width = (2 + Math.random() * 3) + "px";
-    snow.style.height = snow.style.width;
-
-    magicIceSnow.appendChild(snow);
-  }
-}
+An khang thịnh vượng,
+phát lộc phát tài.
+`;
 
 // Gõ từng chữ lên lá bài
 function typeMagicWish(text) {
@@ -2551,51 +2175,11 @@ async function revealMagicCard(selectedCard, x, y, isSummon = false) {
   await typeMagicWish(sharedWish);
 
   // Giữ lá bài trên màn hình để người nhận đọc
-  await new Promise(resolve => setTimeout(resolve, 2200));
+  await new Promise(resolve => setTimeout(resolve, 2800));
 
-  // Chuyển sang thế giới băng tuyết
-  createIceSnow();
-  magicIceWorld.classList.add("show");
-  magicIceWorld.setAttribute("aria-hidden", "false");
+  // Chuyển sang cảnh kết
+  await playFinalEnding();
 
-  await new Promise(resolve => setTimeout(resolve, 900));
-
-  // Lá bài trượt xuống, để lộ phong cảnh phía sau
-  magicReveal.classList.add("slide-away");
-
-  // Lá bài trượt xuống, để lộ phong cảnh băng tuyết
-  magicReveal.classList.add("slide-away");
-
-  await new Promise(resolve => setTimeout(resolve, 1300));
-
-  // Chim cánh cụt chạy tới
-  const penguin = document.getElementById("penguin");
-  const penguinWish = document.getElementById("penguinWish");
-
-  penguin.classList.remove("enter", "splat");
-  penguinWish.classList.remove("show");
-
-  // Chạy vào khung hình
-  void penguin.offsetWidth;
-  penguin.classList.add("enter");
-
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
-  // Lao bụng vào màn hình
-  penguin.classList.remove("enter");
-  void penguin.offsetWidth;
-  penguin.classList.add("splat");
-
-  // Chờ khoảnh khắc bụng ép sát màn hình
-  await new Promise(resolve => setTimeout(resolve, 450));
-
-  // Lời chúc xuất hiện
-  penguinWish.textContent =
-    "Mong những điều dịu dàng nhất\nsẽ luôn tìm đến.";
-
-  penguinWish.classList.add("show");
-
-  // Giữ cảnh cuối để người nhận đọc
   magicBusy = false;
 }
 
@@ -2622,30 +2206,20 @@ magicCardContainer.addEventListener("click", (event) => {
     false
   );
 });
-
-// Cách 2: nhấn giữ ở bất kỳ đâu trên nền vũ trụ
 magicUniverse.addEventListener("pointerdown", (event) => {
   if (magicBusy) return;
-
-  // Bỏ qua nút trở về trang 2
-  if (event.target.closest("#backToPage2")) return;
-
+  if (event.target.closest("#backToPage1")) return;
   const cards = [
     ...magicCardContainer.querySelectorAll(".flying-card")
   ];
-
   if (cards.length === 0) return;
-
   holdTriggered = false;
   pointerStartX = event.clientX;
   pointerStartY = event.clientY;
-
   holdTimer = setTimeout(() => {
     holdTriggered = true;
     suppressNextClick = true;
-
     const selectedCard = getRandomMagicCard(cards);
-
     revealMagicCard(
       selectedCard,
       pointerStartX,
@@ -2654,31 +2228,71 @@ magicUniverse.addEventListener("pointerdown", (event) => {
     );
   }, HOLD_DURATION);
 });
-
-// Nếu kéo ngón tay/chuột đi quá xa thì hủy thao tác nhấn giữ
 magicUniverse.addEventListener("pointermove", (event) => {
   if (!holdTimer) return;
-
   const dx = event.clientX - pointerStartX;
   const dy = event.clientY - pointerStartY;
-
   if (Math.hypot(dx, dy) > 18) {
     clearTimeout(holdTimer);
     holdTimer = null;
   }
 });
-
 function stopMagicHold() {
   if (holdTimer) {
     clearTimeout(holdTimer);
     holdTimer = null;
   }
 }
-
 magicUniverse.addEventListener("pointerup", stopMagicHold);
 magicUniverse.addEventListener("pointercancel", stopMagicHold);
 magicUniverse.addEventListener("pointerleave", stopMagicHold);
+async function playFinalEnding() {
+  const ending = document.getElementById("paperTear");
+  const endingWords = document.getElementById("endingWords");
+  const endingBookCover = document.getElementById("endingBookCover");
+  const originalCover = document.getElementById("cover");
+  const originalCoverContent = originalCover?.querySelector(".cover-content");
+  if (!ending || !endingWords || !endingBookCover ||
+      !originalCover || !originalCoverContent) {
+    console.error("Không tìm thấy các thành phần của cảnh kết.");
+    return;
+  }
+  endingBookCover.replaceChildren(originalCoverContent.cloneNode(true));
+  endingBookCover.style.animation = "none";
+  endingBookCover.style.transform = "rotateY(-155deg)";
+  ending.classList.remove(
+    "ending-reverse",
+    "preparing",
+    "words-visible",
+    "book-visible",
+    "book-closing",
+    "tearing",
+    "torn"
+  );
+  endingWords.style.opacity = "";
+  endingWords.style.transform = "";
+  ending.classList.add(
+    "ending-reverse",
+    "tearing",
+    "torn",
+    "preparing"
+  );
+  ending.setAttribute("aria-hidden", "false");
+  void ending.offsetWidth;
+  ending.classList.remove("preparing");
+  void ending.offsetWidth;
+  ending.classList.remove("torn");
+  await new Promise(resolve => setTimeout(resolve, 1100));
+  ending.classList.add("words-visible");
+  await new Promise(resolve => setTimeout(resolve, 3000));
+  ending.classList.add("book-visible");
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  endingBookCover.style.animation = "";
+  void endingBookCover.offsetWidth;
+  ending.classList.add("book-closing");
+  await new Promise(resolve => setTimeout(resolve, 1600));
+  endingBookCover.style.transform = "rotateY(0deg)";
+}
 </script>
 </body>
 </html>
-
